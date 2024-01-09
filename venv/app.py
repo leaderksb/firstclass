@@ -4,7 +4,7 @@ import pymysql
 # MySQL 데이터베이스에 연결
 connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='tokki6013*',
+                             password='1234',
                              db='firstclass',
                              charset='utf8mb4')
 
@@ -40,6 +40,9 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
+@app.route('/mypage')
+def mypage():
+    return render_template('myPage.html')
 # @app.route('/memo', methods=['POST'])
 # def post_article():
 #     # 1. 클라이언트로부터 데이터를 받기
