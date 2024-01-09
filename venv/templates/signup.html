@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+  <h1>Register</h1>
+  <form id="registerForm">
+    ID: <input type="text" id="id" name="id"><br>
+    Password: <input type="password" id="pw" name="pw"><br>
+    Nickname: <input type="text" id="nickname" name="nickname"><br>
+    Email: <input type="text" id="email" name="email"><br>
+    Profile Image: <input type="text" id="proimg" name="proimg"><br>
+    <button type="button" onclick="submitForm()">Submit</button>
+  </form>
+  
+  <script>
+    function submitForm() {
+      let id = document.getElementById('id').value;
+      let pw = document.getElementById('pw').value;
+      let nickname = document.getElementById('nickname').value;
+      let email = document.getElementById('email').value;
+      let proimg = document.getElementById('proimg').value;
+
+      $.ajax({
+        url: '/signup',
+        type: 'POST', 
+        data: {
+          id: id,
+          pw: pw,
+          nickname: nickname,
+          email: email,
+          proimg: proimg,
+        },
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(response) {
+          alert(response);
+        },
+        error: function(error) {
+          console.error('Error:', error);
+        },
+      });
+    }
+  </script>
+</body>
+</html>

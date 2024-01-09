@@ -4,7 +4,7 @@ import pymysql
 # MySQL 데이터베이스에 연결
 connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='tokki6013*',
+                             password='hello123',
                              db='firstclass',
                              charset='utf8mb4')
 
@@ -33,12 +33,67 @@ finally:
     # MySQL 연결 종료
     connection.close()
 
+db = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='hello123',
+    db='firstclass',
+    charset='utf8mb4'
+)
+
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        userInfo = request.form
+        id = userInfo['id']
+        pw = userInfo['pw']
+        nickname = userInfo['nickname']
+        email = userInfo['email']
+        proimg = userInfo['proimg']
+        
+        cursor = db.cursor()
+        
+        if not (id and pw and nickname and email):
+            return '모두 입력해주세요'
+        else:
+            sql = "SELECT * FROM information WHERE id = %s"
+            cursor.execute(sql, (id,))
+            account = cursor.fetchone()
+            if account:
+                return '이미 존재하는 id 입니다'
+            
+            sql = "SELECT * FROM information WHERE email = %s"
+            cursor.execute(sql, (email,))
+            account = cursor.fetchone()
+            if account:
+                return '이미 가입한 이메일입니다'
+            
+            sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (id, pw, nickname, email, proimg))
+            
+            db.commit()
+            cursor.close()
+            return '회원가입 완료!'
+            
+    return render_template('signup.html')
+
+
+@app.route('/login')
+def login():
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    
+    return render_template('logout.html')
 
 # @app.route('/memo', methods=['POST'])
 # def post_article():
@@ -74,4 +129,4 @@ def home():
 #     return jsonify({'result': 'success', 'articles': result})
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000, debug=True)
+    app.run('0.0.0.0', port=5050, debug=True)
