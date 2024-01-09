@@ -1,80 +1,86 @@
 from flask import Flask, render_template, request, jsonify
 import pymysql
 
-# MySQL 데이터베이스에 연결
-connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='1234',
-                             db='firstclass',
-                             charset='utf8mb4')
-
-try:
-    with connection.cursor() as cursor:
-        # SQL 쿼리 작성
-        sql = "desc information"
-        # SQL 쿼리 실행
-        cursor.execute(sql)
-        # 모든 결과 가져오기
-        result = cursor.fetchall()
-        print(result)
-except Exception as e:
-    print(f"An error occurred: {e}")
-
-
-    # with connection.cursor() as cursor:
-    #     # SQL 쿼리 작성
-    #     sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
-    #     # SQL 쿼리 실행
-    #     cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
-
-    # 데이터베이스에 변경 사항 반영
-    # connection.commit()
-finally:
-    # MySQL 연결 종료
-    connection.close()
-
-
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/mypage')
-def mypage():
-    return render_template('myPage.html')
-# @app.route('/memo', methods=['POST'])
-# def post_article():
-#     # 1. 클라이언트로부터 데이터를 받기
-#    url_receive = request.form['url_give']
-#    comment_receive = request.form['comment_give']
+@app.route('/mypage', methods=['GET'])
+def read_profile():
+    # MySQL 데이터베이스에 연결
+    connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='1234',
+                             db='firstclass',
+                             charset='utf8mb4')
 
-#    # 2. meta tag를 스크래핑하기
-#    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-#    data = requests.get(url_receive, headers=headers)
-#    soup = BeautifulSoup(data.text, 'html.parser')
-#    print(soup)  # HTML을 받아온 것을 확인할 수 있다.
-   
-#    og_image = soup.select_one('meta[property="og:image"]')
-#    og_title = soup.select_one('meta[property="og:title"]')
-#    og_description = soup.select_one('meta[property="og:description"]')
+    try:
+        with connection.cursor() as cursor:
+            # SQL 쿼리 작성
+            sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
+            
+            # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+            user_id = request.args.get('id')
 
-#    url_title = og_title['content']
-#    url_description = og_description['content']
-#    url_image = og_image['content']
+            # SQL 쿼리 실행
+            cursor.execute(sql, (user_id,))
 
-#    article = {'url': url_receive, 'title': url_title, 'desc': url_description, 'image': url_image, 'comment': comment_receive}
+            # 결과 가져오기
+            result = cursor.fetchone()
 
-#    # 3. mongoDB에 데이터를 넣기
-#    db.articles.insert_one(article)
+            if result:
+                # 프로필 정보를 HTML에 전달하거나 다른 처리를 수행할 수 있음
+                return render_template('mypage.html', profile=result)
+            else:
+                return "해당 사용자의 프로필을 찾을 수 없습니다."
+    except Exception as e:
+        print(f"에러 발생: {e}")
+        return "해당 사용자의 프로필을 찾을 수 없습니다."
+    finally:
+        # MySQL 연결 종료
+        connection.close()
 
-#    return jsonify({'result': 'success'})
+@app.route('/editProfile',methods=['GET'])
+def read_editprofile():
+    # MySQL 데이터베이스에 연결
+    connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='1234',
+                             db='firstclass',
+                             charset='utf8mb4')
 
-# @app.route('/memo', methods=['GET'])
-# def read_articles():
-#     # 1. mongoDB에서 _id 값을 제외한 모든 데이터 조회해오기 (Read)
-#     result = list(db.articles.find({}, {'_id': 0}))
-#     return jsonify({'result': 'success', 'articles': result})
+    try:
+        with connection.cursor() as cursor:
+            # SQL 쿼리 작성
+            sql = "SELECT nickname, email, proimg,id FROM information WHERE id = %s;"
+            
+            # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+            user_id = request.args.get('id')
+
+            # SQL 쿼리 실행
+            cursor.execute(sql, (user_id,))
+
+            # 결과 가져오기
+            result = cursor.fetchone()
+
+            if result:
+                # 프로필 정보를 HTML에 전달하거나 다른 처리를 수행할 수 있음
+                return render_template('editProfile.html', profile=result)
+            else:
+                return "해당 사용자의 프로필을 찾을 수 없습니다."
+    except Exception as e:
+        print(f"에러 발생: {e}")
+        return "해당 사용자의 프로필을 찾을 수 없습니다."
+    finally:
+        # MySQL 연결 종료
+        connection.close()
+
+@app.route('/editProfile',methods=['POST'])
+def editprofile():
+    print(request.get_json("data"))
+    return request.get_json("data")
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

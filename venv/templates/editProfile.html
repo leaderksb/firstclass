@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+    <!-- CSS 표준 -->
+    <link rel="stylesheet" href="/static/css/standard.css">
+    <title>FirstClass</title>
+</head>
+<body>
+    <!--header-->
+    <div class="m-4 flex ...">
+        <div class=" flex-none w-60 h-32 ...">
+          <img src="../static/images/header-logo.png" alt="로고">
+        </div>
+        <div class="grow h-32 ...">
+       
+        </div>
+        <!--로그아웃-->
+        <div class="flex-none w-24 h-32">
+            <img class="mt-6"src="../static/images/logout-logo.png" alt="logout">
+        </div>
+        <div class="flex-none ml-4 w-20 h-32 ...">
+          <img src="../static/images/notice.png" alt="notice">
+        </div>
+      </div>
+    <!-- 프로필 이미지 -->
+    <div class="mt-10 flex justify-center">
+        <div class="probox">
+            <img class="proimg" src="{{profile[2]}}">
+        </div>
+    </div>
+    <div class="mt-1 flex justify-center">
+        <label class="block">
+            <span class="sr-only">Choose profile photo</span>
+            <input type="file" class="block w-full text-sm text-slate-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-orange-50 file:text-orange-700
+              hover:file:bg-orange-100
+            "/>
+          </label>
+    </div>
+    <!--비밀번호-->
+    <div class="mt-5 flex justify-center h-12">
+        <label class="block w-80">
+            <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+              비밀번호
+            </span>
+            <input type="password" id="password" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" />
+          </label>
+    </div>
+    <div class="mt-5 flex justify-center h-12">
+        <label class="block w-80">
+            <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+              비밀번호 확인
+            </span>
+            <input type="password" id="passwordcheck" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" />
+          </label>
+    </div>
+    <!-- 닉네임  -->
+    <div class="mt-5 flex justify-center h-12">
+        <label class="block w-80">
+            <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+              닉네임
+            </span>
+            <input type="text" id="nickname" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="{{profile[0]}}" />
+          </label>
+    </div>
+    <!-- 이메일  -->
+    <div class="mt-5 flex justify-center h-12">
+        <label class="block w-80">
+            <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+              이메일
+            </span>
+            <input type="email" id="email" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="{{profile[1]}}" />
+          </label>
+    </div>
+    <!-- 수정 -->
+    <div class="mt-12 flex justify-center h-12">
+        <button onclick="editProfile()" class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">수정</button>
+    </div>
+    <!-- 취소 -->
+    <div class="mt-2 flex justify-center h-12">
+        <button onclick="cancelAction()" class="rounded-full bg-orange-200 w-80 text-lg font-bold text-white">취소</button>
+    </div>
+
+</body>
+
+<script>
+    const cancelAction = ()=>{
+        const id = "{{profile[3]}}";
+        window.location.href = "./mypage?id="+id;
+    }
+    const editProfile = ()=>{
+       const password = document.getElementById('password').value;
+       const passwordcheck = document.getElementById('passwordcheck').value;
+       const nickname = document.getElementById('nickname').value;
+       const email = document.getElementById('email').value;
+        
+       const data = {
+        password : password,
+        passwordcheck : passwordcheck,
+        nickname : nickname,
+        email : email
+       }
+       $.ajax({
+        type : 'POST',
+        url : 'http://localhost:5000/editProfile',
+        data : JSON.stringify(data),
+        dataType : 'JSON',
+        success : result =>{
+            alert("성공!"+result)
+        },
+        error : (xtr,status,error)=>{
+            console.log(xtr + ":" + status + ":" + error);
+        }
+       })
+    }
+</script>
+</html>
