@@ -50,21 +50,37 @@
     
     <!-- 받은 복주머니 -->
     <div class="mt-14 flex justify-center h-14">
-        <button class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">받은 복주머니</button>
+        <button onclick="letterReceiveListReUrl()" class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">받은 복주머니</button>
     </div>
     <!-- 보낸 복주머니 -->
     <div class="mt-4 flex justify-center h-14">
-        <button class="rounded-full bg-amber-400 w-80 text-lg font-bold text-white">보낸 복주머니</button>
+        <button onclick="letterSendListReUrl()" class="rounded-full bg-amber-400 w-80 text-lg font-bold text-white">보낸 복주머니</button>
     </div>
 
 </body>
 <script>
-    const editProfile = () =>{
-        const id = "{{profile[3]}}";
-        window.location.href = "./editProfile?id="+id;
-    }
-    
-    
+const editProfile = () =>{
+    const id = "{{profile[3]}}";
+    window.location.href = "./editProfile?id="+id;
+}
+
+// /letterReceiveList로 이동
+function letterReceiveListReUrl() {
+    // 리다이렉트할 URL
+    var redirectUrl = "/letterReceiveList";
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
+
+// /letterSendList로 이동
+function letterSendListReUrl() {
+    // 리다이렉트할 URL
+    var redirectUrl = "/letterSendList";
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
 </script>
 
 </html>
