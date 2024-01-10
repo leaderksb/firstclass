@@ -1,18 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+    <!-- CSS 표준 -->
+    <link rel="stylesheet" href="/static/css/standard.css">
+    <title>Signup</title>
 </head>
 <body>
-  <h1>Register</h1>
-  <form id="registerForm" enctype="multipart/form-data">
-    ID: <input type="text" id="id" name="id"><br>
-    Password: <input type="password" id="pw" name="pw"><br>
-    Nickname: <input type="text" id="nickname" name="nickname"><br>
-    Email: <input type="text" id="email" name="email"><br>
-    Profile Image: <input type="file" id="proimg" name="proimg"><br>
-    <button type="button" onclick="submitForm()">Submit</button>
-  </form>
+  <!--header-->
+  <div class="m-4 flex ...">
+    <div class=" flex-none w-60 h-32 ...">
+      <img src="../static/images/header-logo.png" alt="로고">
+    </div>
+    <div class="grow h-32 ...">
+   
+    </div>
+</div>
+<form id="registerForm" enctype="multipart/form-data">
+<!-- 프로필 이미지 -->
+<div class="mt-10 flex justify-center">
+    <div class="probox">
+        <img class="preimg" id="preimg" src="../static/images/default_image.jpg">
+    </div>
+</div>
+<div class="mt-1 flex justify-center">
+  <input type="file" id="proimg" name="proimg" style="display: none;" accept="images/*"/>
+    <a href="#" onclick="jQuery('#proimg').click();"><p class="text-blue-500 font-bold mt-1">프로필 수정</p></a>
+</div>
+<div class="mt-5 flex justify-center h-12">
+  <label class="block w-80">
+      <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+        아이디
+      </span>
+      <input type="text" id="id" name="id" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="아이디를 입력해주세요" />
+    </label>
+</div>
+<!--비밀번호-->
+<div class="mt-5 flex justify-center h-12">
+    <label class="block w-80">
+        <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+          비밀번호
+        </span>
+        <input type="password" id="pw" name="pw" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="비밀번호를 입력해주세요"/>
+      </label>
+</div>
+<!-- 닉네임  -->
+<div class="mt-5 flex justify-center h-12">
+    <label class="block w-80">
+        <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+          닉네임
+        </span>
+        <input type="text" id="nickname" name="nickname" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="닉네임을 입력해주세요" />
+      </label>
+</div>
+<!-- 이메일  -->
+<div class="mt-5 flex justify-center h-12">
+    <label class="block w-80">
+        <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
+          이메일
+        </span>
+        <input type="email" id="email" name="email" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="이메일을 입력해주세요" />
+      </label>
+</div>
+<!-- 수정 -->
+<div class="mt-12 flex justify-center h-12">
+    <button onclick="submitForm()" class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">회원가입</button>
+</div>
+</form>
+<!-- 취소 -->
+<div class="mt-2 flex justify-center h-12">
+    <button onclick="road_login()" class="rounded-full bg-orange-200 w-80 text-lg font-bold text-white">취소</button>
+</div>
   
   <script>
     function submitForm() {
@@ -25,13 +87,39 @@
         processData: false,
         contentType: false,
         success: function(response) {
-          alert(response);
+          if (response == 'signupOK') {
+            window.location.href = './login'
+          } else {
+            alert(response);
+          }
         },
         error: function(error) {
           console.error('Error:', error);
         },
       });
     }
+
+    function road_login() {
+      window.location.href = './login'
+    }
+
+
+    $('#proimg').change(function() {
+      setImageFromFile(this, '#preimg');
+    });
+    const setImageFromFile = function(input, expression) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          const fileType = input.files[0].type
+          if(!fileType.includes('image')){
+            alert('해당 파일은 이미지가 아닙니다\n 이미지(jpg,jpeg,gif,png)를 업로드 해주세요');
+            return
+          }
+          $(expression).attr('src',e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+      }}
   </script>
 </body>
 </html>

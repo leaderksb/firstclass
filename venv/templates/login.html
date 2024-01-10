@@ -2,14 +2,48 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js"
+  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  crossorigin="anonymous"></script>
+  <!-- CSS 표준 -->
+  <link rel="stylesheet" href="/static/css/standard.css">
+  <title>Login</title>
 </head>
 <body>
-  <h1>Login</h1>
-  <form id="loginForm">
-    ID: <input type="text" id="id" name="id"><br>
-    Password: <input type="password" id="pw" name="pw"><br>
-    <button type="button" onclick="submitLoginForm()">Submit</button>
-  </form>
+  <!--header-->
+  <div class="m-4 flex ...">
+    <div class=" flex-none w-60 h-32 ...">
+      <img src="../static/images/header-logo.png" alt="로고">
+    </div>
+    <div class="grow h-32 ...">
+    </div>
+  </div>
+<!-- 메인 로고 이미지 -->
+<div class="mt-12 flex justify-center">
+    <div class="mainbox">
+        <img class="mainlogo" src="../static/images/main-logo.png">
+    </div>
+</div>
+<form id="loginForm">
+<div class="mt-8 flex justify-center h-12">
+    <label class="block w-80">
+        <input type="text" id="id" name="id" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="아이디를 입력하세요" />
+      </label>
+</div>
+<div class="mt-3 flex justify-center h-12">
+  <label class="block w-80">
+      <input type="password" id="pw" name="pw" class="w-80 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-full sm:text-sm focus:ring-1" placeholder="비밀번호를 입력하세요" />
+    </label>
+</div>
+<!-- 로그인  -->
+<div class="mt-5 flex justify-center h-14">
+    <button onclick="submitLoginForm()" class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">로그인</button>
+</div>
+</form>
+<div class="mt-4 flex justify-center h-14">
+  <button onclick="goSignup()" class="rounded-full bg-amber-400 w-80 text-lg font-bold text-white">회원가입</button>
+</div>
   
   <script>
     function submitLoginForm() {
@@ -25,13 +59,21 @@
         },
         contentType: 'application/x-www-form-urlencoded',
         success: function(response) {
-          alert(response);
+          if (response == 'loginOK') {
+            window.location.href = './mainpage'
+          } else {
+          alert(response);}
         },
         error: function(error) {
           console.error('Error:', error);
         },
       });
     }
+
+  function goSignup() {
+    window.location.href ='./signup'
+  }
   </script>
+  
 </body>
 </html>

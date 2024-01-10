@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify,session
+from flask import Flask, render_template, request, jsonify,session,redirect
 import pymysql
 import os
 import json
@@ -13,8 +13,21 @@ app.secret_key = 'hello123'
 def home():
     return render_template('index.html')
 
+def CheckLogin(id):
+    # if session['logged_in'] == True and session['id'] == id:
+    if session.get('logged_in') == True and session.get('id') == id:
+        return True
+    else:
+        return False
+
 @app.route('/mypage', methods=['GET'])
 def read_profile():
+    # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+    user_id = request.args.get('id')
+            
+    if CheckLogin(user_id) == False:
+        return redirect('./login')
+    
     # MySQL 데이터베이스에 연결
     connection = pymysql.connect(host='localhost',
                              user='root',
@@ -26,9 +39,6 @@ def read_profile():
         with connection.cursor() as cursor:
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
-
-            # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
-            user_id = request.args.get('id')
 
             # SQL 쿼리 실행
             cursor.execute(sql, (user_id,))
@@ -50,6 +60,12 @@ def read_profile():
 
 @app.route('/editProfile',methods=['GET'])
 def read_editprofile():
+    
+    # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+    user_id = request.args.get('id')
+    
+    if CheckLogin(user_id) == False:
+        return redirect('./login')
     # MySQL 데이터베이스에 연결
     connection = pymysql.connect(host='localhost',
                              user='root',
@@ -62,12 +78,8 @@ def read_editprofile():
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg,id FROM information WHERE id = %s;"
 
-            # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
-            user_id = request.args.get('id')
-
             # SQL 쿼리 실행
             cursor.execute(sql, (user_id,))
-
             # 결과 가져오기
             result = cursor.fetchone()
 
@@ -85,12 +97,14 @@ def read_editprofile():
 
 @app.route('/editProfile',methods=['PUT'])
 def editprofile():
+    
     file = request.files['file']
     data = json.loads(request.form['data'])
     id = data.get("id")
     password = data.get("password")
     nickname = data.get("nickname")
     email = data.get("email")
+    
 
     def validate_password(password):
         if len(password) < 8:
@@ -144,7 +158,7 @@ def editprofile():
             cursor.execute(output_query,(id,))
             output = cursor.fetchall()
 
-            return jsonify(output) ;
+            return jsonify(output) 
 
     except Exception as e:
         print(f"에러 발생: {e}")
@@ -240,7 +254,7 @@ def signup():
                     cursor.execute(sql, (id, pw, nickname, email, proimg))
 
                 connection.commit()
-                return '회원가입 완료!'
+                return 'signupOK'
     except Exception as e:
         print(f"error occured: {e}")
         return "회원가입 에러"
@@ -273,7 +287,7 @@ def login():
                 if accout:
                     session['logged_in'] = True
                     session['id'] = id
-                    return '로그인 성공!'
+                    return 'loginOK'
                 else:
                     return 'ID 또는 비밀번호가 일치하지 않습니다'
     except Exception as e:
