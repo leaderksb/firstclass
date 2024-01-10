@@ -19,6 +19,12 @@ app.secret_key = 'hello123'
 @app.route('/')
 def home():
     return render_template('index.html')
+@app.route('/sentmessagelist')
+def read_sentmessagelist():
+    return render_template('sentmessagelist.html')
+@app.route('/sentmessage')
+def read_sentmessage():
+    return render_template('sentmessage.html')
 
 @app.route('/main')
 def read_main():

@@ -38,3 +38,16 @@
     height: 100%;
     object-fit: cover;
 }
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th ,tr{
+    text-align: center;
+    padding: 8px;
+    border-bottom: 4px solid #fdba74; ;
+}
+tr:last-child {
+    border-bottom: 0px
+}
