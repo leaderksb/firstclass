@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify,session,redirect
+from flask import Flask, make_response, render_template, request, jsonify,session,redirect
 import pymysql
 from pymysql.cursors import DictCursor
 import os
@@ -37,6 +37,8 @@ def read_main():
 def search():
     global conn
 
+    letterImg = request.args.get('letterImg')
+
     try:
         with conn.cursor() as cursor:
             sql = "SELECT * FROM nickname, email, id FROM information WHERE id = %s;"
@@ -66,13 +68,16 @@ def CheckLogin(id):
     else:
         return False
 
+from flask import make_response
+
 @app.route('/mypage', methods=['GET'])
 def read_profile():
     global conn
-    # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
-    user_id = request.args.get('id')
 
-    if CheckLogin(user_id) == False:
+    # 세션에서 'id'를 가져오기
+    user_id = session.get('id')
+
+    if not user_id:
         return redirect('./login')
 
     try:
@@ -80,7 +85,7 @@ def read_profile():
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
 
-            # SQL 쿼리 실행
+            # SQL 쿠키 실행
             cursor.execute(sql, (user_id,))
 
             # 결과 가져오기
@@ -94,6 +99,35 @@ def read_profile():
     except Exception as e:
         print(f"에러 발생: {e}")
         return "해당 사용자의 프로필을 찾을 수 없습니다."
+
+# @app.route('/mypage', methods=['GET'])
+# def read_profile():
+#     global conn
+#     # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+#     user_id = request.args.get('id')
+
+#     if CheckLogin(user_id) == False:
+#         return redirect('./login')
+
+#     try:
+#         with conn.cursor() as cursor:
+#             # SQL 쿼리 작성
+#             sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
+
+#             # SQL 쿼리 실행
+#             cursor.execute(sql, (user_id,))
+
+#             # 결과 가져오기
+#             result = cursor.fetchone()
+
+    #         if result:
+    #             # 프로필 정보를 HTML에 전달하거나 다른 처리를 수행할 수 있음
+    #             return render_template('mypage.html', profile=result)
+    #         else:
+    #             return "해당 사용자의 프로필을 찾을 수 없습니다."
+    # except Exception as e:
+    #     print(f"에러 발생: {e}")
+    #     return "해당 사용자의 프로필을 찾을 수 없습니다."
     #finally:
         # MySQL 연결 종료
         # 자동호출
@@ -279,7 +313,6 @@ def signup():
         # 자동호출
     return render_template('signup.html')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     global conn
@@ -311,7 +344,7 @@ def login():
 def logout():
     session.pop('logged_in', None)
     session.pop('id', None)
-    return '로그아웃되었습니다'
+    return jsonify({'result': 'success'})
 
 @app.route('/dashboard')
 def dashboard():
@@ -355,16 +388,59 @@ finally:
     conn.close()
 '''
 
+# @app.route('/letterImgSelect', methods=['GET'])
+# def letterImgSelect():
+#     send_id = request.args.get('send_id')
+#     receive_id = request.args.get('receive_id')
+
+#     print()
+#     print('send_id >', send_id)
+#     print('receive_id >', receive_id)
+#     print()
+
+#     return render_template('letterImgSelect.html', send_id=send_id, receive_id=receive_id)
+
+
 @app.route('/letterImgSelect', methods=['GET'])
 def letterImgSelect():
+    global conn
 
-    return render_template('letterImgSelect.html')
+    send_id = request.args.get('send_id')
+    receive_id = request.args.get('receive_id')
+
+    print()
+    print('send_id >', send_id)
+    print('receive_id >', receive_id)
+    print()
+    
+    try:
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:  # 딕셔너리 타입으로 가져오기
+            # send_id 검증
+            sql = "select * from information where id = %s;"
+            cursor.execute(sql, (send_id,))
+            send_data = cursor.fetchone()
+
+            # receive_id 검증
+            sql = "select * from information where id = %s;"
+            cursor.execute(sql, (receive_id,))
+            receive_data = cursor.fetchone()
+            
+            # send_id와 receive_id가 모두 유효한 경우
+            if send_data and receive_data:
+                return render_template('letterImgSelect.html', send_id=send_id, receive_id=receive_id)
+            else:
+                return {"result": "fail"}, 400
+    except Exception as e:
+        print('Error:', e)
+        return {"result": "fail"}, 500
 
 @app.route('/letterWrite', methods=['GET'])
 def letterWrite():
+    send_id = request.args.get('send_id')
+    receive_id = request.args.get('receive_id')
     letterImg = request.args.get('letterImg')
 
-    return render_template('letterWrite.html', letterImg=letterImg)
+    return render_template('letterWrite.html', send_id=send_id, receive_id=receive_id, letterImg=letterImg)
 
 # 상대방에게 첫 복주머니 보내기
 @app.route('/letterWriteNew', methods=['POST'])
@@ -372,6 +448,7 @@ def letterImgReceive(): ########################################
     global conn
 
     send_id = request.form['send_id']
+    receive_id = request.form['receive_id']
     letterImg = request.form['letterImg']
     writeTitle = request.form['writeTitle']
     writeContent = request.form['writeContent']
@@ -385,7 +462,7 @@ def letterImgReceive(): ########################################
         with conn.cursor() as cursor:
             sql = "insert into luckybag (send_id, receive_id, letterimg, title, content, readchk) values (%s, %s, %s, %s, %s, %s);"
             # SQL 쿼리 실행
-            cursor.execute(sql, (send_id, 'user1', letterImg, writeTitle, writeContent, 'False'))
+            cursor.execute(sql, (send_id, receive_id, letterImg, writeTitle, writeContent, 'False'))
             # DB에 반영
             conn.commit()
             # MySQL 연결 종료
@@ -580,5 +657,30 @@ def letterSendDelete():
     # 성공적으로 DB에 저장한 경우 성공 메시지를 클라이언트에 전달
     return jsonify(result='success')
 ##################################################
+
+# 현재 로그인한 사용자 입장에서 안 읽은 복주머니 개수 반환
+@app.route('/luckybagReadFalseCnt', methods=['GET'])
+def getLuckybagCount():
+    global conn
+
+    receive_id = session.get('id')
+
+    try:
+        with conn.cursor() as cursor:
+            sql = "select count(*) from luckybag where receive_id = '" + receive_id + "' and readchk = 'False';"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+
+            if result is not None:
+                count = result[0]
+            else:
+                count = 0
+
+            return jsonify(result='success', count=count)
+
+    except Exception as e:
+        print('Error:', e)
+        return jsonify(result='fail')
+    
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

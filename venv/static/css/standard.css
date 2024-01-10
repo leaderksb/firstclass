@@ -129,7 +129,7 @@ td { /* 각 셀에 검은색 1픽셀 테두리를 추가합니다. */
 .mainbox {
     margin-top: 5%;
     width: 250px;
-    height: 250px;
+    max-height: 250px;
 }
 .mainlogo {
     height: 100%;

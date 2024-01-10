@@ -77,9 +77,26 @@
 </div> -->
 
 <script>
-    var letterImg = '따뜻한 설날.jpg';
+// $.get("/letterImgSelect",
+//     {send_id: send_id, receive_id: receive_id},
+//     function(response) {
+//     // response는 서버에서 전달받은 데이터입니다.
+//     // 이 데이터를 myVariable에 저장합니다.
+//     myVariable = response;
 
-    function letterImgSelect(imgElement) {
+//     // myVariable를 콘솔에 출력해 확인합니다.
+//     console.log(myVariable);
+// });
+
+var urlParams = new URLSearchParams(window.location.search);
+var send_id = urlParams.get('send_id');
+var receive_id = urlParams.get('receive_id');
+var letterImg = '따뜻한 설날.jpg';
+
+// alert(send_id);
+// alert(receive_id);
+
+function letterImgSelect(imgElement) {
     // 전역 변수 letterImg에 선택한 이미지의 값을 저장
     letterImg = imgElement.dataset.value;
     // 선택한 이미지가 잘 저장되었는지 확인하기 위한 alert
@@ -87,15 +104,16 @@
     
     // 선택한 이미지를 letterpre 클래스를 가진 img의 src로 설정
     document.querySelector('.letterpre').src = "/static/images/" + letterImg;
-    }
+}
 
-    function letterWriteRedirect() {
-        // 리다이렉트할 URL을 만듭니다.
-        var redirectUrl = "/letterWrite?letterImg=" + letterImg;
+function letterWriteRedirect() {
+    // 리다이렉트할 URL을 만듭니다.
+    // var redirectUrl = "/letterWrite?letterImg=" + letterImg;
+    var redirectUrl = "/letterWrite?send_id=" + send_id + "&receive_id=" + receive_id + "&letterImg=" + letterImg;
 
-        // 페이지를 리다이렉트합니다.
-        window.location.href = redirectUrl;
-    }
+    // 페이지를 리다이렉트합니다.
+    window.location.href = redirectUrl;
+}
 
 // 뒤로가기 함수
 function goBack() {

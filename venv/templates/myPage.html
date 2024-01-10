@@ -1,61 +1,46 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- <!DOCTYPE html> -->
+<!-- <html xmlns="http://www.w3.org/1999/xhtml"> -->
 
-<head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"
-    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-    crossorigin="anonymous"></script>
+<!-- <head> -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.js" -->
+    <!-- integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" -->
+    <!-- crossorigin="anonymous"></script> -->
     <!-- CSS 표준 -->
-    <link rel="stylesheet" href="/static/css/standard.css">
-    <title>FirstClass</title>
-</head>
-<body>
-    <!--header-->
-    <div class="m-4 flex ...">
-        <div class=" flex-none w-60 h-32 ...">
-          <img src="../static/images/header-logo.png" alt="로고">
-        </div>
-        <div class="grow h-32 ...">
-       
-        </div>
-        <!--로그아웃-->
-        <div class="flex-none w-24 h-32">
-            <img class="mt-6"src="../static/images/logout-logo.png" alt="logout">
-        </div>
-        <div class="flex-none ml-4 w-20 h-32 ...">
-          <img src="../static/images/notice.png" alt="notice">
-        </div>
-      </div>
-    
-    <div class="mt-8 mb-4 m flex justify-center h-14 ...">
-        <img src="../static/images/mypage-logo.png" alt="mypage-logo">
+    <!-- <link rel="stylesheet" href="/static/css/standard.css"> -->
+    <!-- <title>FirstClass</title> -->
+<!-- </head> -->
+<!-- <body> -->
+{% extends "base.html" %}
+{% block content %}
+<div class="mt-8 mb-4 m flex justify-center h-14 ...">
+    <img src="../static/images/mypage-logo.png" alt="mypage-logo">
+</div>
+<!-- 프로필 이미지 -->
+<div class="mt-10 flex justify-center">
+    <div class="probox">
+        <img class="proimg" src="{{profile[2]}}">
     </div>
-    <!-- 프로필 이미지 -->
-    <div class="mt-10 flex justify-center">
-        <div class="probox">
-            <img class="proimg" src="{{profile[2]}}">
-        </div>
+</div>
+<!-- 이름 & 이메일 -->
+<div class="mt-4 flex justify-center h-14">
+    <div><p class="proname">{{profile[0]}}</p>
+    <p class="proemail">{{profile[1]}}</p>
     </div>
-    <!-- 이름 & 이메일 -->
-    <div class="mt-4 flex justify-center h-14">
-        <div><p class="proname">{{profile[0]}}</p>
-        <p class="proemail">{{profile[1]}}</p>
-        </div>
-    </div>
-    <!-- 프로필 수정 버튼 -->
-    <div class="mt-4 flex justify-center h-8">
-        <button onclick="editProfile()" class="rounded-full bg-orange-400 w-32 font-bold text-white">프로필 수정</button>
-    </div>
-    
-    <!-- 받은 복주머니 -->
-    <div class="mt-14 flex justify-center h-14">
-        <button onclick="letterReceiveListReUrl()" class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">받은 복주머니</button>
-    </div>
-    <!-- 보낸 복주머니 -->
-    <div class="mt-4 flex justify-center h-14">
-        <button onclick="letterSendListReUrl()" class="rounded-full bg-amber-400 w-80 text-lg font-bold text-white">보낸 복주머니</button>
-    </div>
+</div>
+<!-- 프로필 수정 버튼 -->
+<div class="mt-4 flex justify-center h-8">
+    <button onclick="editProfile()" class="rounded-full bg-orange-400 w-32 font-bold text-white">프로필 수정</button>
+</div>
+
+<!-- 받은 복주머니 -->
+<div class="mt-14 flex justify-center h-14">
+    <button onclick="letterReceiveListReUrl()" class="rounded-full bg-orange-400 w-80 text-lg font-bold text-white">받은 복주머니</button>
+</div>
+<!-- 보낸 복주머니 -->
+<div class="mt-4 flex justify-center h-14">
+    <button onclick="letterSendListReUrl()" class="rounded-full bg-amber-400 w-80 text-lg font-bold text-white">보낸 복주머니</button>
+</div>
 
 </body>
 <script>
@@ -83,4 +68,5 @@ function letterSendListReUrl() {
 }
 </script>
 
-</html>
+<!-- </html> -->
+{% endblock %}

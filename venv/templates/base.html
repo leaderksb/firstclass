@@ -23,8 +23,109 @@
     <title>FirstClass</title>
 </head>
 
+<header>
+    <div class="m-4 flex ...">
+        <div class=" flex-none w-60 h-32 ...">
+            <img onclick="mainReUrl()" src="../static/images/header-logo.png" alt="logo">
+        </div>
+        <div class="grow h-32 ...">
+        </div>
+
+    {% if session.get('id') %}
+    <!--로그아웃-->
+    <div class="flex-none w-24 h-32">
+        <img onclick="logoutReUrl()" class="mt-6" src="../static/images/logout-logo.png" alt="logout">
+    </div>
+    <!--마이페이지-->
+    <div class="flex-none w-32 h-32">
+        <img onclick="mypageReUrl()" class="mt-7 ml-4" src="../static/images/mypage-header-logo.png" alt="mypage">
+    </div>
+    <!-- 알림 -->
+    <div class="flex-none ml-8 w-20 h-32 ...">
+        <img onclick="letterReceiveListReUrl()" src="../static/images/notice.png" alt="notice">
+        <div class="absolute top-0 right-0 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center" id="luckybagReadFalseCnt">
+        </div>
+    </div>
+    {% endif %}
+    </div>
+</header>
+
 <body>
 {% block content %}{% endblock %}
+<script>
+// /main으로 이동
+function mainReUrl() {
+    // 리다이렉트할 URL
+    var redirectUrl = "/main";
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
+
+// /logout로 이동
+function logoutReUrl() {
+    $.ajax({
+        url: '/logout',
+        type: 'GET',
+        success: function(response) {
+            if (response.result === 'success') {
+                // 로그아웃 성공 알림
+                alert('로그아웃 되었습니다');
+
+                // 리다이렉트할 URL
+                var redirectUrl = "/login";  // or any other page
+
+                // 페이지를 리다이렉트
+                window.location.replace(redirectUrl);
+            }
+        },
+        error: function(error) {
+            console.error('Error:', error);
+        }
+    });
+}
+
+// /mypage로 이동
+function mypageReUrl() {
+    // 세션 ID 가져오기
+    var userId = "{{ session.get('id') }}";
+
+    // 리다이렉트할 URL
+    var redirectUrl = "/mypage?id=" + userId;
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
+
+// 쿠키에서 특정 이름의 값을 가져오는 함수
+// function getCookie(name) {
+//     var nameEQ = name + "=";
+//     var ca = document.cookie.split(';');
+//     for(var i=0; i < ca.length; i++) {
+//         var c = ca[i];
+//         while (c.charAt(0)==' ') c = c.substring(1, c.length);
+//         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+//     }
+//     return null;
+// }
+
+// /letterReceiveList로 이동
+function letterReceiveListReUrl() {
+    // 리다이렉트할 URL
+    var redirectUrl = "/letterReceiveList";
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
+
+$(document).ready(function(){
+    $.get("/luckybagReadFalseCnt", function(data){
+        if(data.result === 'success'){
+            $('#luckybagReadFalseCnt').text(data.count);
+        }
+    });
+});
+</script>
 </body>
 
 </html>
