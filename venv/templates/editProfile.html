@@ -26,24 +26,16 @@
         <div class="flex-none ml-4 w-20 h-32 ...">
           <img src="../static/images/notice.png" alt="notice">
         </div>
-      </div>
+    </div>
     <!-- 프로필 이미지 -->
     <div class="mt-10 flex justify-center">
         <div class="probox">
-            <img class="proimg" src="{{profile[2]}}">
+            <img class="proimg" id="proimg" src="{{profile[2]}}">
         </div>
     </div>
     <div class="mt-1 flex justify-center">
-        <label class="block">
-            <span class="sr-only">Choose profile photo</span>
-            <input type="file" class="block w-full text-sm text-slate-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-orange-50 file:text-orange-700
-              hover:file:bg-orange-100
-            "/>
-          </label>
+      <input type="file" id="imgchange" name="imgchange" style="display: none;" accept="images/*"/>
+        <a href="#" onclick="jQuery('#imgchange').click();"><p class="text-blue-500 font-bold mt-1">프로필 수정</p></a>
     </div>
     <!--비밀번호-->
     <div class="mt-5 flex justify-center h-12">
@@ -86,13 +78,13 @@
     </div>
     <!-- 취소 -->
     <div class="mt-2 flex justify-center h-12">
-        <button onclick="cancelAction()" class="rounded-full bg-orange-200 w-80 text-lg font-bold text-white">취소</button>
+        <button onclick="road_mypage()" class="rounded-full bg-orange-200 w-80 text-lg font-bold text-white">취소</button>
     </div>
 
 </body>
 
 <script>
-    const cancelAction = ()=>{
+    const road_mypage = ()=>{
         const id = "{{profile[3]}}";
         window.location.href = "./mypage?id="+id;
     }
@@ -101,25 +93,54 @@
        const passwordcheck = document.getElementById('passwordcheck').value;
        const nickname = document.getElementById('nickname').value;
        const email = document.getElementById('email').value;
+       const id = "{{profile[3]}}";
         
        const data = {
         password : password,
         passwordcheck : passwordcheck,
         nickname : nickname,
-        email : email
+        email : email,
+        id : id
        }
+
+       const fileInput = document.getElementById('imgchange');
+       const file = fileInput.files[0];
+
+       let formData = new FormData();
+       formData.append('file',file);
+       formData.append('data',JSON.stringify(data));
+       
        $.ajax({
-        type : 'POST',
+        type : 'PUT',
         url : 'http://localhost:5000/editProfile',
-        data : JSON.stringify(data),
-        dataType : 'JSON',
+        data : formData,
+        contentType : false,
+        processData : false,
         success : result =>{
-            alert("성공!"+result)
+            alert("성공!")
+            road_mypage()
         },
         error : (xtr,status,error)=>{
             console.log(xtr + ":" + status + ":" + error);
         }
        })
+    }
+    $('#imgchange').change(function() {
+      setImageFromFile(this, '#proimg');
+    });
+    const setImageFromFile = function(input, expression) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          const fileType = input.files[0].type
+          if(!fileType.includes('image')){
+            alert('해당 파일은 이미지가 아닙니다\n 이미지(jpg,jpeg,gif,png)를 업로드 해주세요');
+            return
+          }
+          $(expression).attr('src',e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
     }
 </script>
 </html>
