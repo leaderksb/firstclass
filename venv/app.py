@@ -4,13 +4,6 @@ import os
 import json
 import re
 
-db = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='firstclass',
-    charset='utf8mb4'
-)
 app = Flask(__name__)
 # 세션 사용에 필요한 SECRET_KEY 설정
 app.secret_key = 'hello123'
@@ -25,7 +18,7 @@ def read_profile():
     # MySQL 데이터베이스에 연결
     connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='1234',
+                             password='hello123',
                              db='firstclass',
                              charset='utf8mb4')
 
@@ -60,7 +53,7 @@ def read_editprofile():
     # MySQL 데이터베이스에 연결
     connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='1234',
+                             password='hello123',
                              db='firstclass',
                              charset='utf8mb4')
 
@@ -133,7 +126,7 @@ def editprofile():
     # MySQL 데이터베이스에 연결
     connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='1234',
+                             password='hello123',
                              db='firstclass',
                              charset='utf8mb4')
 
@@ -181,77 +174,110 @@ def validate_email(email):
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if request.method == 'POST':
-        userInfo = request.form
-        id = userInfo['id']
-        pw = userInfo['pw']
-        nickname = userInfo['nickname']
-        email = userInfo['email']
-        # proimg = userInfo['proimg']
+    connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='hello123',
+                             db='firstclass',
+                             charset='utf8mb4')
+    try:
+        if request.method == 'POST':
+            userInfo = request.form
+            id = userInfo['id']
+            pw = userInfo['pw']
+            nickname = userInfo['nickname']
+            email = userInfo['email']
+            # proimg = userInfo['proimg']
 
-        # 유효성 검사 실시
-        if not validate_email(email):
-            return "이메일 형식이 잘못됐습니다"
-        if not validate_password(pw):
-            return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
+            # 유효성 검사 실시
+            if not validate_email(email):
+                return "이메일 형식이 잘못됐습니다"
+            if not validate_password(pw):
+                return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
+            
+            with connection.cursor() as cursor:
 
-        cursor = db.cursor()
+                # 사용자가 업로드한 이미지 가져오기
+                file = request.files['proimg'] 
 
-        # 사용자가 업로드한 이미지 가져오기
-        file = request.files.get('proimg')
+                extension = os.path.splitext(file.filename)[1]
+                f_name = id + extension
+                
+                # directory 경로
+                upload_folder = 'venv/static/images'
+                
+                # directory 가 없다면 생성
+                os.makedirs(upload_folder, exist_ok=True)
+                
+                # Windows에서는 별도로 쓰기 권한을 추가해야 함
+                try:
+                    os.chmod(upload_folder, 0o777)
+                except Exception as e:
+                    print(f"Failed to set write permissions: {e}")
+                # 파일 저장
+                file.save(os.path.join(upload_folder, f_name))
 
-        # 이미지를 업로드 하지 않았다면 기본 사진 보여주기
-        if file:
-            proimg = file.read()
-        else:
-            with open('/Users/juminkim/Desktop/firstclass/venv/static/default_image.jpg', 'rb') as f:
-                proimg = f.read()
+                proimg = '../static/images/'+f_name
+                
+                if not (id and pw and nickname and email):
+                    return '모두 입력해주세요'
+                else:
+                    sql = "SELECT * FROM information WHERE id = %s"
+                    cursor.execute(sql, (id,))
+                    account = cursor.fetchone()
+                    if account:
+                        return '이미 존재하는 id 입니다'
 
-        if not (id and pw and nickname and email):
-            return '모두 입력해주세요'
-        else:
-            sql = "SELECT * FROM information WHERE id = %s"
-            cursor.execute(sql, (id,))
-            account = cursor.fetchone()
-            if account:
-                return '이미 존재하는 id 입니다'
+                    sql = "SELECT * FROM information WHERE email = %s"
+                    cursor.execute(sql, (email,))
+                    account = cursor.fetchone()
+                    if account:
+                        return '이미 가입한 이메일입니다'
 
-            sql = "SELECT * FROM information WHERE email = %s"
-            cursor.execute(sql, (email,))
-            account = cursor.fetchone()
-            if account:
-                return '이미 가입한 이메일입니다'
+                    sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
+                    cursor.execute(sql, (id, pw, nickname, email, proimg))
 
-            sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (id, pw, nickname, email, proimg))
-
-            db.commit()
-            cursor.close()
-            return '회원가입 완료!'
+                connection.commit()
+                return '회원가입 완료!'
+    except Exception as e:
+        print(f"error occured: {e}")
+        return "회원가입 에러"
+    finally:
+        connection.close()
 
     return render_template('signup.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        userInfo = request.form
+    
+    connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='hello123',
+                             db='firstclass',
+                             charset='utf8mb4')
+    try:
+        if request.method == 'POST':
+            userInfo = request.form
 
-        id = userInfo['id']
-        pw = userInfo['pw']
+            id = userInfo['id']
+            pw = userInfo['pw']
+            
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
+                cursor.execute(sql, (id, pw))
+                accout = cursor.fetchone()
 
-        cursor = db.cursor()
-
-        sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
-        cursor.execute(sql, (id, pw))
-        accout = cursor.fetchone()
-
-        if accout:
-            session['logged_in'] = True
-            session['id'] = id
-            return '로그인 성공!'
-        else:
-            return 'ID 또는 비밀번호가 일치하지 않습니다'
+                if accout:
+                    session['logged_in'] = True
+                    session['id'] = id
+                    return '로그인 성공!'
+                else:
+                    return 'ID 또는 비밀번호가 일치하지 않습니다'
+    except Exception as e:
+        print(f"error occured: {e}")
+        return "로그인 에러"
+    finally:
+        connection.close()
 
     return render_template('login.html')
 
@@ -271,4 +297,4 @@ def dashboard():
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000, debug=True)
+    app.run('0.0.0.0', port=5050, debug=True)

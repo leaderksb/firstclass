@@ -16,14 +16,7 @@
   
   <script>
     function submitForm() {
-
-      var formData = new FormData();
-      formData.append('id', $('#id').val());
-      formData.append('pw', $('#pw').val());
-      formData.append('nickname', $('#nickname').val());
-      formData.append('email', $('#email').val());
-      formData.append('proimg', $('#proimg')[0].files[0]);
-
+      var formData = new FormData($('#registerForm')[0]);
 
       $.ajax({
         url: '/signup',
