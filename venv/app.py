@@ -1,38 +1,8 @@
 from flask import Flask, render_template, request, jsonify, session
 import pymysql
 import os
-
-# MySQL 데이터베이스에 연결
-connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='hello123',
-                             db='firstclass',
-                             charset='utf8mb4')
-
-try:
-    with connection.cursor() as cursor:
-        # SQL 쿼리 작성
-        sql = "desc information"
-        # SQL 쿼리 실행
-        cursor.execute(sql)
-        # 모든 결과 가져오기
-        result = cursor.fetchall()
-        print(result)
-except Exception as e:
-    print(f"An error occurred: {e}")
-
-
-    # with connection.cursor() as cursor:
-    #     # SQL 쿼리 작성
-    #     sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
-    #     # SQL 쿼리 실행
-    #     cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
-
-    # 데이터베이스에 변경 사항 반영
-    # connection.commit()
-finally:
-    # MySQL 연결 종료
-    connection.close()
+import json
+import re
 
 db = pymysql.connect(
     host='localhost',
@@ -53,6 +23,24 @@ app.secret_key = 'hello123'
 def home():
     return render_template('index.html')
 
+def validate_password(password):
+    if len(password) < 8:
+        return False
+    elif re.search('[0-9]',password) is None:
+        return False
+    elif re.search('[A-Z]',password) is None: 
+        return False
+    elif re.search('[a-z]',password) is None: 
+        return False
+    else:
+        return True
+
+def validate_email(email):
+    if re.match('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$', email) is None:
+        return False
+    else:
+        return True
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -61,9 +49,25 @@ def signup():
         pw = userInfo['pw']
         nickname = userInfo['nickname']
         email = userInfo['email']
-        proimg = userInfo['proimg']
+        # proimg = userInfo['proimg']
+        
+        # 유효성 검사 실시
+        if not validate_email(email):
+            return "이메일 형식이 잘못됐습니다"
+        if not validate_password(pw):
+            return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
         
         cursor = db.cursor()
+        
+        # 사용자가 업로드한 이미지 가져오기
+        file = request.files.get('proimg')
+        
+        # 이미지를 업로드 하지 않았다면 기본 사진 보여주기
+        if file:
+            proimg = file.read()
+        else:
+            with open('/Users/juminkim/Desktop/firstclass/venv/static/default_image.jpg', 'rb') as f:
+                proimg = f.read()
         
         if not (id and pw and nickname and email):
             return '모두 입력해주세요'
