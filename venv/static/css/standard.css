@@ -2,7 +2,7 @@ html, body {
     height: 100%;
 }
 
-.post_left {
+/* .post_left {
     width: 30%;
     background-color: lightblue;
     float: left;
@@ -14,7 +14,7 @@ html, body {
     display: grid; /* 그리드 사용 */
     grid-template-columns: repeat(2, 1fr); /* 2개의 컬럼 생성 */
     grid-gap: 10px; /* 그리드 사이의 간격 설정 */
-}
+} */
 
 .post_right button {
     padding: 10px; /* 버튼과 그리드 셀 사이에 공간 추가 */
@@ -31,22 +31,15 @@ html, body {
 
 /* 이미지 요소에 적용할 스타일 */
 .letterimg {
-    margin: 10%;
-    width: 400px;
-    height: 600px;
+    width: 300px;
+    height: 400px;
 }
 
 .div_align_center {
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
     height: 100%;
-}
-
-.div_align_center button {
-    width: 100px; /* 버튼의 너비를 100px로 설정 */
-    margin: 10px auto; /* 위아래로 10px의 마진을 가지면서 좌우로는 자동 마진을 설정하여 중앙에 배치 */
 }
 
 h1.center {
@@ -72,9 +65,9 @@ img.center {
 
 .write_textarea {
     background: transparent; /* 배경을 투명하게 합니다 */
-    width: 400px;
-    height: 200px;
-    max-width: 400px; /* 가로 크기를 제한합니다. 원하는 값으로 조정하세요 */
+    width: 80%;
+    height: 400px;
+    max-width: 80%; /* 가로 크기를 제한합니다. 원하는 값으로 조정하세요 */
     max-height: 600px; /* 세로 크기를 제한합니다. 원하는 값으로 조정하세요 */
     resize: none; /* 사용자가 textarea 크기를 조절하는 것을 방지합니다 */
 }
@@ -83,8 +76,7 @@ table {
     border-collapse: collapse;  /* 테두리를 하나로 합칩니다. */
 }
 
-td {
-    border: 1px solid black;  /* 각 셀에 검은색 1픽셀 테두리를 추가합니다. */
+td { /* 각 셀에 검은색 1픽셀 테두리를 추가합니다. */
     padding: 10px;  /* 셀 안의 내용과 테두리 사이에 여백을 추가합니다. */
 }
 .probox{
@@ -97,6 +89,32 @@ td {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+.messagebox {
+    height: 800px;
+    width: 45%; 
+    border-radius: 5%;
+    overflow: hidden;
+    position:absolute;
+    justify-content: center;
+    margin-top:2%;
+    border: 4px solid #fdba74
+}
+.messageboxrose {
+    height: 800px;
+    width: 45%; 
+    border-radius: 5%;
+    overflow: hidden;
+    position:absolute;
+    justify-content: center;
+    margin-top:2%;
+    border: 4px solid rgb(253 164 175);
+}
+.message {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position:relative;
 }
 .proname {
     font-size: 22px;
@@ -124,7 +142,7 @@ table {
 th ,tr{
     text-align: center;
     padding: 8px;
-    border-bottom: 4px solid #fdba74; ;
+    border-bottom: 4px solid #fdab74; ;
 }
 tr:last-child {
     border-bottom: 0px

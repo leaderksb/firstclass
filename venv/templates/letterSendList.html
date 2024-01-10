@@ -1,7 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="div_align_center">
-    <table>
+<!--header-->
+<div class="m-4 flex ...">
+    <div class=" flex-none w-60 h-32 ...">
+      <img src="../static/images/header-logo.png" alt="로고">
+    </div>
+    <div class="grow h-32 ...">
+   
+    </div>
+    <!--로그아웃-->
+    <div class="flex-none w-24 h-32">
+        <img class="mt-6"src="../static/images/logout-logo.png" alt="logout">
+    </div>
+    <!--마이페이지-->
+    <div class="flex-none w-32 h-32">
+        <img class="mt-7 ml-4" src="../static/images/mypage-header-logo.png" alt="mypage">
+    </div>
+    <div class="flex-none ml-8 w-20 h-32 ...">
+      <img src="../static/images/notice.png" alt="notice">
+    </div>
+  </div>
+<!-- 보낸복주머니  -->
+<div class="m-auto flex justify-center h-12 w-3/5">
+    <button class="rounded-full bg-rose-300 w-full text-lg font-bold text-white">보낸 복주머니</button>
+</div>
+<div class="m-auto mt-14 flex justify-center container border-rose-300 border-4" style="height: auto;width: 55%; border-radius: 5%;">
+    <table class="table">
         <tr>
             <td>받는이</td>
             <td>제목</td>
@@ -17,6 +41,7 @@
         </tr>
         {% endfor %}
     </table>
+</div>
 </div>
 
 <script>
