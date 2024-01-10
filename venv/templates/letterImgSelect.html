@@ -33,48 +33,13 @@
           </div>
     </div>
   </div>
-<!-- <div class="post_left">
-    <div class="div_align_center">
-        <h1 style="margin-top: 30px;">편지지를 골라주세요!</h1>
-        <img class="letterpre" src="/static/images/따뜻한-설날.jpg" alt="letterImg">
-        <button onclick="letterWriteRedirect()">편지지 선택</button>
-        <button onclick="goBack()">취소</button>
-    </div>
-</div>
-<div class="post_right">
-    <button type="button">
-        <img onclick="letterImgSelect(this)" class="letterimg" src="/static/images/따뜻한-설날.jpg" alt="따뜻한-설날.jpg" data-value="따뜻한-설날.jpg" >
-    </button>
-    <button type="button">
-        <img onclick="letterImgSelect(this)" class="letterimg" src="/static/images/시원한-설날.jpg" alt="시원한-설날.jpg" data-value="시원한-설날.jpg">
-    </button>
-    <button type="button">
-        <img onclick="letterImgSelect(this)" class="letterimg" src="/static/images/심플-테두리.jpg" alt="심플-테두리.jpg" data-value="심플-테두리.jpg">
-    </button>
-    <button type="button">
-        <img onclick="letterImgSelect(this)" class="letterimg" src="/static/images/예쁜-테두리.jpg" alt="예쁜-테두리.jpg" data-value="예쁜-테두리.jpg">
-    </button>
-</div> -->
 
 <script>
-// $.get("/letterImgSelect",
-//     {send_id: send_id, receive_id: receive_id},
-//     function(response) {
-//     // response는 서버에서 전달받은 데이터입니다.
-//     // 이 데이터를 myVariable에 저장합니다.
-//     myVariable = response;
-
-//     // myVariable를 콘솔에 출력해 확인합니다.
-//     console.log(myVariable);
-// });
 
 var urlParams = new URLSearchParams(window.location.search);
 var send_id = urlParams.get('send_id');
 var receive_id = urlParams.get('receive_id');
 var letterImg = '따뜻한 설날.jpg';
-
-// alert(send_id);
-// alert(receive_id);
 
 function letterImgSelect(imgElement) {
     // 전역 변수 letterImg에 선택한 이미지의 값을 저장

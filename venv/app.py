@@ -5,6 +5,7 @@ import os
 import json
 import re
 
+# DB 연결
 conn = pymysql.connect(
     host='localhost',
     user='root',
@@ -99,38 +100,6 @@ def read_profile():
     except Exception as e:
         print(f"에러 발생: {e}")
         return "해당 사용자의 프로필을 찾을 수 없습니다."
-
-# @app.route('/mypage', methods=['GET'])
-# def read_profile():
-#     global conn
-#     # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
-#     user_id = request.args.get('id')
-
-#     if CheckLogin(user_id) == False:
-#         return redirect('./login')
-
-#     try:
-#         with conn.cursor() as cursor:
-#             # SQL 쿼리 작성
-#             sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
-
-#             # SQL 쿼리 실행
-#             cursor.execute(sql, (user_id,))
-
-#             # 결과 가져오기
-#             result = cursor.fetchone()
-
-    #         if result:
-    #             # 프로필 정보를 HTML에 전달하거나 다른 처리를 수행할 수 있음
-    #             return render_template('mypage.html', profile=result)
-    #         else:
-    #             return "해당 사용자의 프로필을 찾을 수 없습니다."
-    # except Exception as e:
-    #     print(f"에러 발생: {e}")
-    #     return "해당 사용자의 프로필을 찾을 수 없습니다."
-    #finally:
-        # MySQL 연결 종료
-        # 자동호출
 
 @app.route('/editProfile',methods=['GET'])
 def read_editprofile():
@@ -353,54 +322,6 @@ def dashboard():
     else:
         return '로그인이 필요합니다'
 
-'''
-# MySQL 데이터베이스에 연결
-conn = pymysql.connect(host='localhost',
-            
-                             user='root',
-                             password='tokki6013*',
-                             db='firstclass',
-                             charset='utf8mb4')
-
-try:
-    with conn.cursor() as cursor:
-        # SQL 쿼리 작성
-        sql = "desc information"
-        # SQL 쿼리 실행
-        cursor.execute(sql)
-        # 모든 결과 가져오기
-        result = cursor.fetchall()
-        print(result)
-except Exception as e:
-    print(f"An error occurred: {e}")
-
-    # with conn.cursor() as cursor:
-    #     # SQL 쿼리 작성
-    #     sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
-    #     # SQL 쿼리 실행
-    #     cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
-
-    # 데이터베이스에 변경 사항 반영
-    # conn.commit()
-finally:
-    # MySQL 연결 종료
-    # 자동호출
-    conn.close()
-'''
-
-# @app.route('/letterImgSelect', methods=['GET'])
-# def letterImgSelect():
-#     send_id = request.args.get('send_id')
-#     receive_id = request.args.get('receive_id')
-
-#     print()
-#     print('send_id >', send_id)
-#     print('receive_id >', receive_id)
-#     print()
-
-#     return render_template('letterImgSelect.html', send_id=send_id, receive_id=receive_id)
-
-
 @app.route('/letterImgSelect', methods=['GET'])
 def letterImgSelect():
     global conn
@@ -444,7 +365,7 @@ def letterWrite():
 
 # 상대방에게 첫 복주머니 보내기
 @app.route('/letterWriteNew', methods=['POST'])
-def letterImgReceive(): ########################################
+def letterImgReceive():
     global conn
 
     send_id = request.form['send_id']
@@ -504,17 +425,14 @@ def letterWriteRe():
     # 성공적으로 DB에 저장한 경우 성공 메시지를 클라이언트에 전달
     return jsonify(result='success')
 
-##################################################
 # 나에게 온 복주머니 리스트 - 전체
 @app.route('/letterReceiveList', methods=['GET'])
 def letterReceiveList():
     global conn
 
     # 만약에 로그인 id가 있으면 그걸 luckybag 테이블에서 receive_id로 검색
-    receive_id = 'user1'
+    receive_id = session.get('id')
 
-    print('receive_id >', receive_id)
-    print()
 
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:  # 딕셔너리 타입으로 가져오기
@@ -547,12 +465,13 @@ def letterReceive(num):
             # 자동호출
             # cursor.close()
             # conn.close()
-            print('record >', data)
-            print()
+            sql = "update luckybag set readchk = 'True' WHERE num = %s;"
+            cursor.execute(sql, (num,))
+            conn.commit()
             return render_template('letterReceive.html', record=data)
     except Exception as e:
         print('Error:', e)
-        return render_template('letterReceive.html')
+        return render_template('letterReceive.html',)
 
 # 상대방에게 보낸 복주머니 삭제
 @app.route('/letterReceiveDelete', methods=['POST'])
@@ -579,19 +498,14 @@ def letterReceiveDelete():
 
     # 성공적으로 DB에 저장한 경우 성공 메시지를 클라이언트에 전달
     return jsonify(result='success')
-##################################################
 
-##################################################
 # 내가 보낸 복주머니 리스트 - 전체
 @app.route('/letterSendList', methods=['GET'])
 def letterSendList():
     global conn
 
     # 만약에 로그인 id가 있으면 그걸 luckybag 테이블에서 send_id로 검색
-    send_id = 'user2'
-
-    print('send_id >', send_id)
-    print()
+    send_id = session.get('id')
 
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:  # 딕셔너리 타입으로 가져오기
@@ -613,7 +527,7 @@ def letterSend(num):
     global conn
 
     # 만약에 로그인 id가 있으면 그걸 luckybag 테이블에서 send_id로 검색
-    send_id = 'user1'
+    send_id = session.get('id')
 
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:  # 딕셔너리 타입으로 가져오기
@@ -624,8 +538,6 @@ def letterSend(num):
             # 자동호출
             # cursor.close()
             # conn.close()
-            print('record >', data)
-            print()
             return render_template('letterSend.html', record=data)
     except Exception as e:
         print('Error:', e)
@@ -656,7 +568,6 @@ def letterSendDelete():
 
     # 성공적으로 DB에 저장한 경우 성공 메시지를 클라이언트에 전달
     return jsonify(result='success')
-##################################################
 
 # 현재 로그인한 사용자 입장에서 안 읽은 복주머니 개수 반환
 @app.route('/luckybagReadFalseCnt', methods=['GET'])

@@ -10,7 +10,7 @@
         <img class="message" src="../static/images/{{ record['letterimg'] }}" alt="letterImg">
     </div>
     <div class="messageboxrose">
-    <h1 class="mt-8 ml-12">____에게</h1>
+    <h1 class="mt-8 ml-12">{{record['receive_id']}}에게</h1>
     
     <input type="hidden" id="num" value="{{ record['num'] }}">
     <label class="block ml-8 mt-2">
@@ -21,7 +21,7 @@
         <span class="block text-sm font-medium text-slate-700 text-center">내용</span>
         <textarea class="write_textarea" readonly id="writeContent" >{{ record['content'] }}</textarea>
     </label>
-    <h1 style="margin: 30px; text-align: end;">____보냄</h1>
+    <h1 style="margin: 30px; text-align: end;">{{record['send_id']}}보냄</h1>
     <!-- 삭제 버튼 -->
     <div class="flex justify-center"><button onclick="letterReceiveDelete()" class="rounded-full bg-amber-500 h-8 font-bold text-white w-44" id="delete">삭제</button>
     </div>

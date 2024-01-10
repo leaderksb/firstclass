@@ -1,16 +1,3 @@
-<!-- <!DOCTYPE html> -->
-<!-- <html xmlns="http://www.w3.org/1999/xhtml"> -->
-
-<!-- <head> -->
-    <!-- <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"
-    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-    crossorigin="anonymous"></script> -->
-    <!-- CSS 표준 -->
-    <!-- <link rel="stylesheet" href="/static/css/standard.css">
-    <title>FirstClass</title> -->
-<!-- </head>
-<body> -->
 {% extends "base.html" %}
 {% block content %}
 <!-- 메인 로고 이미지 -->
@@ -55,30 +42,6 @@ function searchReceiveId() {
                 }
             }
     });
-}
-
-    // const search = () =>{
-    //     const id = document.getElementById('member_id').value;
-
-    //     const data = {
-    //         id : id,
-    //     }
-    //     $.ajax({
-    //     type : 'GET',
-    //     url : 'http://localhost:5000/mainapi',
-    //     data : JSON.stringify(data),
-    //     dataType : 'JSON',
-    //     success : result =>{
-    //         // todo 작성하기 화면으로 이동 or 회원이 존재하지 않습니다.
-            
-    //     },
-    //     error : (xtr,status,error)=>{
-    //         console.log(xtr + ":" + status + ":" + error);
-    //     }
-    //    })
-    // }
-    
+}    
 </script>
-
-<!-- </html> -->
 {% endblock %}
