@@ -1,15 +1,21 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,session
 import pymysql
 import os
 import json
 import re
+
 db = pymysql.connect(
     host='localhost',
     user='root',
-    password='hello123',
+    password='1234',
     db='firstclass',
     charset='utf8mb4'
 )
+app = Flask(__name__)
+# 세션 사용에 필요한 SECRET_KEY 설정
+app.secret_key = 'hello123'
+# app.secret_key = os.environ.get('SECRET_KEY')
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -72,16 +78,11 @@ def read_editprofile():
             # 결과 가져오기
             result = cursor.fetchone()
 
-app = Flask(__name__)
-# 세션 사용에 필요한 SECRET_KEY 설정
-app.secret_key = 'hello123'
-# app.secret_key = os.environ.get('SECRET_KEY')
-
-            if result:
+        if result:
                 # 프로필 정보를 HTML에 전달하거나 다른 처리를 수행할 수 있음
-                return render_template('editProfile.html', profile=result)
-            else:
-                return "해당 사용자의 프로필을 찾을 수 없습니다."
+            return render_template('editProfile.html', profile=result)
+        else:
+            return "해당 사용자의 프로필을 찾을 수 없습니다."
     except Exception as e:
         print(f"에러 발생: {e}")
         return "해당 사용자의 프로필을 찾을 수 없습니다."
