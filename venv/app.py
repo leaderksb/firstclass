@@ -8,7 +8,7 @@ import re
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='1234',
+    password='tokki6013*',
     db='firstclass',
     charset='utf8mb4'
 )
@@ -25,15 +25,13 @@ def read_sentmessagelist():
 def read_sentmessage():
     return render_template('sentmessage.html')
 
-@app.route('/main', methods=['POST'])
+@app.route('/main', methods=['GET', 'POST'])
 def read_main():
-    print(session.get('id'))
-    print(session.get('id')!=None)
-    if(session.get('id')is not None) :
+    print(session.get('id') != None)
+    if(session.get('id')!= None) :
         return render_template('main.html')
     else:
         return render_template('login.html')
-    
 
 @app.route('/mainapi', methods=['GET'])
 def search():
