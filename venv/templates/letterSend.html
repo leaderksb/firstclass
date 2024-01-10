@@ -1,23 +1,62 @@
 {% extends "base.html" %}
 {% block content %}
+<!--header-->
+<div class="m-4 flex ...">
+    <div class=" flex-none w-60 h-32 ...">
+      <img src="../static/images/header-logo.png" alt="로고">
+    </div>
+    <div class="grow h-32 ...">
+   
+    </div>
+    <!--로그아웃-->
+    <div class="flex-none w-24 h-32">
+        <img class="mt-6"src="../static/images/logout-logo.png" alt="logout">
+    </div>
+    <!--마이페이지-->
+    <div class="flex-none w-32 h-32">
+        <img class="mt-7 ml-4" src="../static/images/mypage-header-logo.png" alt="mypage">
+    </div>
+    <div class="flex-none ml-8 w-20 h-32 ...">
+      <img src="../static/images/notice.png" alt="notice">
+    </div>
+  </div>
+<!-- 보낸 복주머니  -->
+<div class="m-auto flex justify-center h-12 w-3/5">
+    <button class="rounded-full bg-rose-300 w-full text-lg font-bold text-white">보낸 복주머니</button>
+</div>
+
 <div class="div_align_center">
-    <h1 style="margin-top: 30px;">____에게</h1>
-    <img class="center" src="/static/images/{{ record['letterimg'] }}" alt="letterImg">
+    <div class="messagebox">
+        <img class="message" src="../static/images/{{ record['letterimg'] }}" alt="letterImg">
+    </div>
+    <div class="messagebox">
+    <h1 class="mt-8 ml-12">____에게</h1>
+
     <input type="hidden" id="num" value="{{ record['num'] }}">
-    <label style="margin-top: 30px;" for="title">제목</label>
-    <input readonly class="write_text" maxlength="100" type="text" id="writeTitle" value="{{ record['title'] }}">
-    <label style="margin-top: 30px;" for="content">내용</label>
-    <textarea readonly class="write_textarea" id="writeContent">{{ record['content'] }}</textarea>
-    <h1 style="margin: 30px;">____보냄</h1>
+    <label class="block ml-8 mt-2">
+        <span class="block text-sm font-medium text-slate-700 text-center">제목</span>
+        <input class="bg-transparent w-4/5" readonly type="text" id="writeTitle" maxlength="100" value="{{record['title']}}">
+    </label>
+    <label class="block ml-8 mt-4">
+        <span class="block text-sm font-medium text-slate-700 text-center">내용</span>
+        <textarea class="write_textarea" readonly id="writeContent" >{{ record['content'] }}</textarea>
+    </label>
+    <h1 style="margin: 30px; text-align: end;">____보냄</h1>
+    <div class="flex justify-center">
     <!-- 수정 버튼 -->
     {% if record['readchk'] == 'False' %}
-    <button onclick="removeReadOnly()" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="re">수정</button>
+    <button onclick="removeReadOnly()"  class="rounded-full bg-rose-400 h-8 font-bold text-white w-44" id="re">수정</button>
     <!-- 저장 버튼 -->
-    <button onclick="letterWriteRe()" style="display: none; justify-content: center; align-items: center; white-space: nowrap;" id="save">저장</button>
+    <button onclick="letterWriteRe()"  class="rounded-full bg-rose-400 h-8 font-bold text-white w-44" style="display: none;" id="save">저장</button>
     {% endif %}
     <!-- 삭제 버튼 -->
-    <button onclick="letterSendDelete()" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="delete">삭제</button>
-    <button onclick="letterSendListReUrl()" style="display: flex; justify-content: center; align-items: center;">보낸 복주머니 목록</button>
+    <button onclick="letterSendDelete()"  class="rounded-full bg-rose-400 h-8 font-bold text-white w-44 ml-2" id="delete">삭제</button>
+    
+    </div>
+    <div class="flex justify-center">
+        <button onclick="letterSendListReUrl()"  class="mt-5 rounded-full bg-rose-300 h-8 font-bold text-white w-80">보낸 복주머니 목록</button>
+    </div>
+    </div>
 </div>
 
 <script>
