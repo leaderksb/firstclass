@@ -20,6 +20,39 @@ app.secret_key = 'hello123'
 def home():
     return render_template('index.html')
 
+@app.route('/main')
+def read_main():
+    return render_template('main.html')
+
+@app.route('/main',methods=['GET'])
+def search():
+    connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='1234',
+                             db='firstclass',
+                             charset='utf8mb4')
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM nickname, email, id FROM information WHERE id = %s;"
+
+            user_id = request.get_json('id')
+            
+            cursor.execute(sql,(user_id,))
+
+            result = cursor.fetchone()
+
+            if result :
+                # todo 작성하는 곳으로 이동
+                return render_template()
+            else:
+                return "사용자가 존재하지 않습니다."
+    except Exception as e:
+        print(f"에러 발생: {e}")
+        return "해당 사용자의 프로필을 찾을 수 없습니다."
+    finally:
+        # MySQL 연결 종료
+        connection.close()
+        
 @app.route('/mypage', methods=['GET'])
 def read_profile():
     # MySQL 데이터베이스에 연결

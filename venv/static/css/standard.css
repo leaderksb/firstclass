@@ -29,3 +29,12 @@
     font-size: 18px;
     text-align: center;
 }
+.mainbox {
+    margin-top: 5%;
+    width: 250px;
+    height: 250px;
+}
+.mainlogo {
+    height: 100%;
+    object-fit: cover;
+}
