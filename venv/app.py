@@ -8,7 +8,7 @@ import re
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='tokki6013*',
+    password='1234',
     db='firstclass',
     charset='utf8mb4'
 )
@@ -25,11 +25,17 @@ def read_sentmessagelist():
 def read_sentmessage():
     return render_template('sentmessage.html')
 
-@app.route('/main')
+@app.route('/main', methods=['POST'])
 def read_main():
-    return render_template('main.html')
+    print(session.get('id'))
+    print(session.get('id')!=None)
+    if(session.get('id')is not None) :
+        return render_template('main.html')
+    else:
+        return render_template('login.html')
+    
 
-@app.route('/main',methods=['GET'])
+@app.route('/mainapi', methods=['GET'])
 def search():
     global conn
 
@@ -51,9 +57,9 @@ def search():
     except Exception as e:
         print(f"에러 발생: {e}")
         return "해당 사용자의 프로필을 찾을 수 없습니다."
-    finally:
+    #finally:
         # MySQL 연결 종료
-        conn.close()
+        # 자동호출
 
 def CheckLogin(id):
     # if session['logged_in'] == True and session['id'] == id:
@@ -90,9 +96,9 @@ def read_profile():
     except Exception as e:
         print(f"에러 발생: {e}")
         return "해당 사용자의 프로필을 찾을 수 없습니다."
-    finally:
+    #finally:
         # MySQL 연결 종료
-        conn.close()
+        # 자동호출
 
 @app.route('/editProfile',methods=['GET'])
 def read_editprofile():
@@ -120,9 +126,9 @@ def read_editprofile():
     except Exception as e:
         print(f"에러 발생: {e}")
         return "해당 사용자의 프로필을 찾을 수 없습니다."
-    finally:
+    #finally:
         # MySQL 연결 종료
-        conn.close()
+        # 자동호출
 
 @app.route('/editProfile',methods=['PUT'])
 def editprofile():
@@ -185,9 +191,9 @@ def editprofile():
     except Exception as e:
         print(f"에러 발생: {e}")
         return "수정 에러"
-    finally:
+    #finally:
         # MySQL 연결 종료
-        conn.close()
+        # 자동호출
 
 def validate_password(password):
     if len(password) < 8:
@@ -211,35 +217,29 @@ def validate_email(email):
 def signup():
     global conn
 
-    if request.method == 'POST':
-        userInfo = request.form
-        id = userInfo['id']
-        pw = userInfo['pw']
-        nickname = userInfo['nickname']
-        email = userInfo['email']
-        # proimg = userInfo['proimg']
-
-        # 유효성 검사 실시
-        if not validate_email(email):
-            return "이메일 형식이 잘못됐습니다"
-        if not validate_password(pw):
-            return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
-
-        cursor = db.cursor()
-
+    try:
+        if request.method == 'POST':
+            userInfo = request.form
+            id = userInfo['id']
+            pw = userInfo['pw']
+            nickname = userInfo['nickname']
+            email = userInfo['email']
+            # proimg = userInfo['proimg']
+            # 유효성 검사 실시
+            if not validate_email(email):
+                return "이메일 형식이 잘못됐습니다"
+            if not validate_password(pw):
+                return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
+            with conn.cursor() as cursor:
                 # 사용자가 업로드한 이미지 가져오기
                 file = request.files['proimg']
-
                 if file and file.filename != '':
                     extension = os.path.splitext(file.filename)[1]
                     f_name = id + extension
-
                     # directory 경로
                     upload_folder = 'venv/static/images'
-
                     # directory 가 없다면 생성
                     os.makedirs(upload_folder, exist_ok=True)
-
                     # Windows에서는 별도로 쓰기 권한을 추가해야 함
                     try:
                         os.chmod(upload_folder, 0o777)
@@ -247,11 +247,9 @@ def signup():
                         print(f"Failed to set write permissions: {e}")
                     # 파일 저장
                     file.save(os.path.join(upload_folder, f_name))
-
                     proimg = '../static/images/'+f_name
                 else:
                     proimg = '../static/images/default_image.jpg'
-
                 if not (id and pw and nickname and email):
                     return '모두 입력해주세요'
                 else:
@@ -260,20 +258,21 @@ def signup():
                     account = cursor.fetchone()
                     if account:
                         return '이미 존재하는 id 입니다'
-
                     sql = "SELECT * FROM information WHERE email = %s"
                     cursor.execute(sql, (email,))
                     account = cursor.fetchone()
                     if account:
                         return '이미 가입한 이메일입니다'
-
                     sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
                     cursor.execute(sql, (id, pw, nickname, email, proimg))
-
-            conn.commit()
-            cursor.close()
-            return '회원가입 완료!'
-
+                conn.commit()
+                return 'signupOK'
+    except Exception as e:
+        print(f"error occured: {e}")
+        return "회원가입 에러"
+    #finally:
+        # MySQL 연결 종료
+        # 자동호출
     return render_template('signup.html')
 
 
@@ -281,18 +280,15 @@ def signup():
 def login():
     global conn
 
-    if request.method == 'POST':
-        userInfo = request.form
-
-        id = userInfo['id']
-        pw = userInfo['pw']
-
-        cursor = conn.cursor()
-
-        sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
-        cursor.execute(sql, (id, pw))
-        accout = cursor.fetchone()
-
+    try:
+        if request.method == 'POST':
+            userInfo = request.form
+            id = userInfo['id']
+            pw = userInfo['pw']
+            with conn.cursor() as cursor:
+                sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
+                cursor.execute(sql, (id, pw))
+                accout = cursor.fetchone()
                 if accout:
                     session['logged_in'] = True
                     session['id'] = id
@@ -302,9 +298,9 @@ def login():
     except Exception as e:
         print(f"error occured: {e}")
         return "로그인 에러"
-    finally:
-        connection.close()
-
+    #finally:
+        # MySQL 연결 종료
+        # 자동호출
     return render_template('login.html')
 
 @app.route('/logout')
@@ -354,13 +350,6 @@ finally:
     # 자동호출
     conn.close()
 '''
-
-# MySQL 데이터베이스에 연결
-conn = pymysql.connect(host='localhost',
-                       user='root',
-                       password='tokki6013*',
-                       db='firstclass',
-                       charset='utf8mb4')
 
 @app.route('/letterImgSelect', methods=['GET'])
 def letterImgSelect():

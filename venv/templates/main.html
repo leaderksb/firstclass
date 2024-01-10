@@ -58,12 +58,12 @@
         }
         $.ajax({
         type : 'GET',
-        url : 'http://localhost:5000/main',
+        url : 'http://localhost:5000/mainapi',
         data : JSON.stringify(data),
         dataType : 'JSON',
         success : result =>{
             // todo 작성하기 화면으로 이동 or 회원이 존재하지 않습니다.
-
+            
         },
         error : (xtr,status,error)=>{
             console.log(xtr + ":" + status + ":" + error);
