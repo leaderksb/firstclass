@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import pymysql
+import os
 
 # MySQL 데이터베이스에 연결
 connection = pymysql.connect(host='localhost',
@@ -43,6 +44,10 @@ db = pymysql.connect(
 
 
 app = Flask(__name__)
+# 세션 사용에 필요한 SECRET_KEY 설정 
+app.secret_key = 'hello123'
+# app.secret_key = os.environ.get('SECRET_KEY')
+
 
 @app.route('/')
 def home():
@@ -85,48 +90,42 @@ def signup():
     return render_template('signup.html')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    
+    if request.method == 'POST':
+        userInfo = request.form
+        
+        id = userInfo['id']
+        pw = userInfo['pw']
+        
+        cursor = db.cursor()
+        
+        sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
+        cursor.execute(sql, (id, pw))
+        accout = cursor.fetchone()
+        
+        if accout:
+            session['logged_in'] = True
+            session['id'] = id
+            return '로그인 성공!'
+        else:
+            return 'ID 또는 비밀번호가 일치하지 않습니다'
+        
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    
-    return render_template('logout.html')
+    session.pop('logged_in', None)
+    session.pop('id', None)
+    return '로그아웃되었습니다'
 
-# @app.route('/memo', methods=['POST'])
-# def post_article():
-#     # 1. 클라이언트로부터 데이터를 받기
-#    url_receive = request.form['url_give']
-#    comment_receive = request.form['comment_give']
+@app.route('/dashboard')
+def dashboard():
+    if 'logged_in' in session:  # 세션에 로그인 상태 정보가 있는지 확인
+        return 'Dashboard - 사용자 ID: ' + session['id']
+    else:
+        return '로그인이 필요합니다'
 
-#    # 2. meta tag를 스크래핑하기
-#    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-#    data = requests.get(url_receive, headers=headers)
-#    soup = BeautifulSoup(data.text, 'html.parser')
-#    print(soup)  # HTML을 받아온 것을 확인할 수 있다.
-   
-#    og_image = soup.select_one('meta[property="og:image"]')
-#    og_title = soup.select_one('meta[property="og:title"]')
-#    og_description = soup.select_one('meta[property="og:description"]')
-
-#    url_title = og_title['content']
-#    url_description = og_description['content']
-#    url_image = og_image['content']
-
-#    article = {'url': url_receive, 'title': url_title, 'desc': url_description, 'image': url_image, 'comment': comment_receive}
-
-#    # 3. mongoDB에 데이터를 넣기
-#    db.articles.insert_one(article)
-
-#    return jsonify({'result': 'success'})
-
-# @app.route('/memo', methods=['GET'])
-# def read_articles():
-#     # 1. mongoDB에서 _id 값을 제외한 모든 데이터 조회해오기 (Read)
-#     result = list(db.articles.find({}, {'_id': 0}))
-#     return jsonify({'result': 'success', 'articles': result})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5050, debug=True)
