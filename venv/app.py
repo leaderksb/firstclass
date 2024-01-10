@@ -198,25 +198,28 @@ def signup():
 
                 # 사용자가 업로드한 이미지 가져오기
                 file = request.files['proimg'] 
+                
+                if file and file.filename != '':
+                    extension = os.path.splitext(file.filename)[1]
+                    f_name = id + extension
+                    
+                    # directory 경로
+                    upload_folder = 'venv/static/images'
+                    
+                    # directory 가 없다면 생성
+                    os.makedirs(upload_folder, exist_ok=True)
+                    
+                    # Windows에서는 별도로 쓰기 권한을 추가해야 함
+                    try:
+                        os.chmod(upload_folder, 0o777)
+                    except Exception as e:
+                        print(f"Failed to set write permissions: {e}")
+                    # 파일 저장
+                    file.save(os.path.join(upload_folder, f_name))
 
-                extension = os.path.splitext(file.filename)[1]
-                f_name = id + extension
-                
-                # directory 경로
-                upload_folder = 'venv/static/images'
-                
-                # directory 가 없다면 생성
-                os.makedirs(upload_folder, exist_ok=True)
-                
-                # Windows에서는 별도로 쓰기 권한을 추가해야 함
-                try:
-                    os.chmod(upload_folder, 0o777)
-                except Exception as e:
-                    print(f"Failed to set write permissions: {e}")
-                # 파일 저장
-                file.save(os.path.join(upload_folder, f_name))
-
-                proimg = '../static/images/'+f_name
+                    proimg = '../static/images/'+f_name
+                else:
+                    proimg = '../static/images/default_image.jpg'
                 
                 if not (id and pw and nickname and email):
                     return '모두 입력해주세요'
