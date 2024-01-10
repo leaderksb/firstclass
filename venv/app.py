@@ -5,21 +5,19 @@ import os
 import json
 import re
 
-db = pymysql.connect(
+conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='1234',
+    password='tokki6013*',
     db='firstclass',
     charset='utf8mb4'
 )
+
 app = Flask(__name__)
 # 세션 사용에 필요한 SECRET_KEY 설정
 app.secret_key = 'hello123'
 # app.secret_key = os.environ.get('SECRET_KEY')
 
-@app.route('/')
-def home():
-    return render_template('index.html')
 @app.route('/sentmessagelist')
 def read_sentmessagelist():
     return render_template('sentmessagelist.html')
@@ -33,13 +31,10 @@ def read_main():
 
 @app.route('/main',methods=['GET'])
 def search():
-    connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='1234',
-                             db='firstclass',
-                             charset='utf8mb4')
+    global conn
+
     try:
-        with connection.cursor() as cursor:
+        with conn.cursor() as cursor:
             sql = "SELECT * FROM nickname, email, id FROM information WHERE id = %s;"
 
             user_id = request.get_json('id')
@@ -58,18 +53,14 @@ def search():
         return "해당 사용자의 프로필을 찾을 수 없습니다."
     finally:
         # MySQL 연결 종료
-        connection.close()
+        conn.close()
 
 @app.route('/mypage', methods=['GET'])
 def read_profile():
-    # MySQL 데이터베이스에 연결
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='1234',
-                                 db='firstclass',
-                                 charset='utf8mb4')
+    global conn
+
     try:
-        with connection.cursor() as cursor:
+        with conn.cursor() as cursor:
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
 
@@ -92,19 +83,14 @@ def read_profile():
         return "해당 사용자의 프로필을 찾을 수 없습니다."
     finally:
         # MySQL 연결 종료
-        connection.close()
+        conn.close()
 
 @app.route('/editProfile',methods=['GET'])
 def read_editprofile():
-    # MySQL 데이터베이스에 연결
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='1234',
-                                 db='firstclass',
-                                 charset='utf8mb4')
+    global conn
 
     try:
-        with connection.cursor() as cursor:
+        with conn.cursor() as cursor:
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg,id FROM information WHERE id = %s;"
 
@@ -127,7 +113,8 @@ def read_editprofile():
         return "해당 사용자의 프로필을 찾을 수 없습니다."
     finally:
         # MySQL 연결 종료
-        connection.close()
+        conn.close()
+
 @app.route('/editProfile',methods=['PUT'])
 def editprofile():
     file = request.files['file']
@@ -168,15 +155,10 @@ def editprofile():
 
     proimg = '../static/images/'+f_name
 
-    # MySQL 데이터베이스에 연결
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='1234',
-                                 db='firstclass',
-                                 charset='utf8mb4')
+    global conn
 
     try:
-        with connection.cursor() as cursor:
+        with conn.cursor() as cursor:
             # SQL 쿼리 작성
             sql = "UPDATE information SET pw = %s, nickname = %s, email = %s, proimg = %s WHERE id = %s ;"
 
@@ -184,7 +166,7 @@ def editprofile():
             cursor.execute(sql, (password,nickname,email,proimg,id))
 
             # 업데이트는 커밋 필요
-            connection.commit()
+            conn.commit()
             output_query = "SELECT * FROM information WHERE id = %s"
             cursor.execute(output_query,(id,))
             output = cursor.fetchall()
@@ -196,7 +178,7 @@ def editprofile():
         return "수정 에러"
     finally:
         # MySQL 연결 종료
-        connection.close()
+        conn.close()
 
 def validate_password(password):
     if len(password) < 8:
@@ -218,6 +200,8 @@ def validate_email(email):
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    global conn
+
     if request.method == 'POST':
         userInfo = request.form
         id = userInfo['id']
@@ -232,7 +216,7 @@ def signup():
         if not validate_password(pw):
             return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
 
-        cursor = db.cursor()
+        cursor = conn.cursor()
 
         # 사용자가 업로드한 이미지 가져오기
         file = request.files.get('proimg')
@@ -262,7 +246,7 @@ def signup():
             sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
             cursor.execute(sql, (id, pw, nickname, email, proimg))
 
-            db.commit()
+            conn.commit()
             cursor.close()
             return '회원가입 완료!'
 
@@ -271,13 +255,15 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global conn
+
     if request.method == 'POST':
         userInfo = request.form
 
         id = userInfo['id']
         pw = userInfo['pw']
 
-        cursor = db.cursor()
+        cursor = conn.cursor()
 
         sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
         cursor.execute(sql, (id, pw))
@@ -305,11 +291,9 @@ def dashboard():
     else:
         return '로그인이 필요합니다'
 
-
-
 '''
 # MySQL 데이터베이스에 연결
-connection = pymysql.connect(host='localhost',
+conn = pymysql.connect(host='localhost',
             
                              user='root',
                              password='tokki6013*',
@@ -317,7 +301,7 @@ connection = pymysql.connect(host='localhost',
                              charset='utf8mb4')
 
 try:
-    with connection.cursor() as cursor:
+    with conn.cursor() as cursor:
         # SQL 쿼리 작성
         sql = "desc information"
         # SQL 쿼리 실행
@@ -328,22 +312,19 @@ try:
 except Exception as e:
     print(f"An error occurred: {e}")
 
-    # with connection.cursor() as cursor:
+    # with conn.cursor() as cursor:
     #     # SQL 쿼리 작성
     #     sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
     #     # SQL 쿼리 실행
     #     cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
 
     # 데이터베이스에 변경 사항 반영
-    # connection.commit()
+    # conn.commit()
 finally:
     # MySQL 연결 종료
     # 자동호출
-    connection.close()
+    conn.close()
 '''
-
-app = Flask(__name__)
-
 
 # MySQL 데이터베이스에 연결
 conn = pymysql.connect(host='localhost',
