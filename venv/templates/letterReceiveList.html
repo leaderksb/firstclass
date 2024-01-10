@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="div_align_center">
+    <table>
+        <tr>
+            <td>보낸이</td>
+            <td>제목</td>
+            <td>작성일자</td>
+            <td>읽음 여부</td>
+        </tr>
+        {% for record in data %}
+        <tr>
+            <td>{{ record['send_id'] }}</td>
+            <td><a href="/letterReceive/{{ record['num'] }}">{{ record['title'] }}</a></td>
+            <td>{{ record['letterdate'] }}</td>
+            <td>{{ record['readchk'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+    // function letterWriteNew(who) {
+    //     var send_id;
+    //     var letterImg = "{{letterImg}}"
+    //     var writeTitle = document.getElementById("writeTitle").value;
+    //     var writeContent = document.getElementById("writeContent").value;
+    
+    //     if(who == 'anonymous') {
+    //         send_id = 'anonymous'
+    //     }else{
+    //         send_id = document.getElementById("nickname").value;
+    //     }
+    
+    //     alert(send_id + '~!');
+    //     alert(letterImg + '~!');
+    //     alert(writeTitle + '~!');
+    //     alert(writeContent + '~!');
+    
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/letterWriteNew",
+    //         data: {'send_id': send_id, 'letterImg': letterImg, 'writeTitle': writeTitle, 'writeContent': writeContent},
+    //         success: function (response) {
+    //             if (response['result'] == 'success') {
+    //                 alert(letterImg + ' 작성 완료');
+    //             } else {
+    //                 alert(letterImg + ' 작성 실패');
+    //             }
+    //         }
+    //     });
+    // }
+    
+// 뒤로가기 함수
+function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

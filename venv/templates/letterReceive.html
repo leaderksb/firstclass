@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="div_align_center">
+    <h1 style="margin-top: 30px;">____에게</h1>
+    <img class="center" src="/static/images/{{ record['letterimg'] }}" alt="letterImg">
+    <input type="hidden" id="num" value="{{ record['num'] }}">
+    <label style="margin-top: 30px;" for="title">제목</label>
+    <input readonly class="write_text" maxlength="100" type="text" id="writeTitle" value="{{ record['title'] }}">
+    <label style="margin-top: 30px;" for="content">내용</label>
+    <textarea readonly class="write_textarea" id="writeContent">{{ record['content'] }}</textarea>
+    <h1 style="margin: 30px;">____보냄</h1>
+    <!-- 삭제 버튼 -->
+    <button onclick="letterReceiveDelete()" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="delete">삭제</button>
+    <button onclick="letterReceiveListReUrl()" style="display: flex; justify-content: center; align-items: center;">받은 복주머니 목록</button>
+</div>
+
+<script>
+function letterReceiveDelete() {
+    var num = document.getElementById("num").value;
+
+    $.ajax({
+        type: "POST",
+        url: "/letterReceiveDelete",
+        data: {'num': num},
+        success: function (response) {
+            if (response['result'] == 'success') {
+                alert('삭제 완료');
+                // 리다이렉트할 URL
+                var redirectUrl = "/letterReceiveList";
+
+                // 페이지를 리다이렉트
+                window.location.replace(redirectUrl);
+            } else {
+                alert('삭제 실패');
+            }
+        }
+    });
+}
+
+// /letterReceiveList로 이동
+function letterReceiveListReUrl() {
+    // 리다이렉트할 URL
+    var redirectUrl = "/letterReceiveList";
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
+</script>
+{% endblock %}

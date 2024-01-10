@@ -1,13 +1,91 @@
-.left {
-    float: left;
-    width: 50%;
-    background-color: lightblue;
+html, body, form {
+    height: 100%;
 }
 
-.right {
-    float: right;
-    width: 50%;
+.post_left {
+    width: 30%;
+    background-color: lightblue;
+    float: left;
+}
+
+.post_right {
+    width: 70%;
     background-color: #bbb;
+    display: grid; /* 그리드 사용 */
+    grid-template-columns: repeat(2, 1fr); /* 2개의 컬럼 생성 */
+    grid-gap: 10px; /* 그리드 사이의 간격 설정 */
+}
+
+.post_right button {
+    padding: 10px; /* 버튼과 그리드 셀 사이에 공간 추가 */
+}
+
+/* 이미지 미리보기에 적용할 스타일 */
+.letterpre {
+    display: block;
+    margin: 10% auto;
+    max-width: 300px;
+    max-height: 500px;
+    height: auto;
+}
+
+/* 이미지 요소에 적용할 스타일 */
+.letterimg {
+    margin: 10%;
+    width: 400px;
+    height: 600px;
+}
+
+.div_align_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+.div_align_center button {
+    width: 100px; /* 버튼의 너비를 100px로 설정 */
+    margin: 10px auto; /* 위아래로 10px의 마진을 가지면서 좌우로는 자동 마진을 설정하여 중앙에 배치 */
+}
+
+h1.center {
+    text-align: center;
+}
+
+img.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 700px;
+    z-index: -1; /* 이미지가 다른 요소들 아래에 나타나게 합니다. */
+}
+
+.write_text {
+    background: transparent; /* 배경을 투명하게 합니다 */
+    width: 400px;
+    resize: none;
+}
+
+
+.write_textarea {
+    background: transparent; /* 배경을 투명하게 합니다 */
+    width: 400px;
+    height: 200px;
+    max-width: 400px; /* 가로 크기를 제한합니다. 원하는 값으로 조정하세요 */
+    max-height: 600px; /* 세로 크기를 제한합니다. 원하는 값으로 조정하세요 */
+    resize: none; /* 사용자가 textarea 크기를 조절하는 것을 방지합니다 */
+}
+
+table {
+    border-collapse: collapse;  /* 테두리를 하나로 합칩니다. */
+}
+
+td {
+    border: 1px solid black;  /* 각 셀에 검은색 1픽셀 테두리를 추가합니다. */
+    padding: 10px;  /* 셀 안의 내용과 테두리 사이에 여백을 추가합니다. */
 }
 .probox{
     width: 200px;

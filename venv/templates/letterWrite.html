@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="div_align_center">
+    <h1 style="margin-top: 30px;">____에게</h1>
+    <img class="center" src="/static/images/{{ letterImg }}" alt="letterImg">
+    <label style="margin-top: 30px;" for="title">제목</label>
+    <input class="write_text" maxlength="100" type="text" id="writeTitle" placeholder="제목을 입력하세요">
+    <label style="margin-top: 30px;" for="content">내용</label>
+    <textarea class="write_textarea" id="writeContent" placeholder="내용을 입력하세요"></textarea>
+    <h1 style="margin: 30px;">____보냄</h1>
+    <button onclick="letterWriteNew('anonymous')" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="anonymous">익명으로 작성하기</button>
+    <!-- 여기 value=nickname에 send_id 기입될 예정 -->
+    <button onclick="letterWriteNew('nickname')" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="nickname" value="nickname">닉네임으로 작성하기</button>
+    <button onclick="goBack()" style="display: flex; justify-content: center; align-items: center;">취소</button>
+</div>
+
+<script>
+function letterWriteNew(who) {
+    var send_id;
+    var letterImg = "{{letterImg}}"
+    var writeTitle = document.getElementById("writeTitle").value;
+    var writeContent = document.getElementById("writeContent").value;
+
+    if(who == 'anonymous') {
+        send_id = 'anonymous'
+    }else{
+        send_id = document.getElementById("nickname").value;
+    }
+
+    alert(send_id + '~!');
+    alert(letterImg + '~!');
+    alert(writeTitle + '~!');
+    alert(writeContent + '~!');
+
+    $.ajax({
+        type: "POST",
+        url: "/letterWriteNew",
+        data: {'send_id': send_id, 'letterImg': letterImg, 'writeTitle': writeTitle, 'writeContent': writeContent},
+        success: function (response) {
+            if (response['result'] == 'success') {
+                alert(letterImg + ' 작성 완료');
+                function letterWriteRedirect() {
+                    // 리다이렉트할 URL
+                    var redirectUrl = "/letterReceiveList";
+
+                    // 페이지를 리다이렉트
+                    window.location.href = redirectUrl;
+                }
+            } else {
+                alert(letterImg + ' 작성 실패');
+            }
+        }
+    });
+}
+
+// 뒤로가기 함수
+function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="div_align_center">
+    <h1 style="margin-top: 30px;">____에게</h1>
+    <img class="center" src="/static/images/{{ record['letterimg'] }}" alt="letterImg">
+    <input type="hidden" id="num" value="{{ record['num'] }}">
+    <label style="margin-top: 30px;" for="title">제목</label>
+    <input readonly class="write_text" maxlength="100" type="text" id="writeTitle" value="{{ record['title'] }}">
+    <label style="margin-top: 30px;" for="content">내용</label>
+    <textarea readonly class="write_textarea" id="writeContent">{{ record['content'] }}</textarea>
+    <h1 style="margin: 30px;">____보냄</h1>
+    <!-- 수정 버튼 -->
+    {% if record['readchk'] == 'False' %}
+    <button onclick="removeReadOnly()" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="re">수정</button>
+    <!-- 저장 버튼 -->
+    <button onclick="letterWriteRe()" style="display: none; justify-content: center; align-items: center; white-space: nowrap;" id="save">저장</button>
+    {% endif %}
+    <!-- 삭제 버튼 -->
+    <button onclick="letterSendDelete()" style="display: flex; justify-content: center; align-items: center; white-space: nowrap;" id="delete">삭제</button>
+    <button onclick="letterSendListReUrl()" style="display: flex; justify-content: center; align-items: center;">보낸 복주머니 목록</button>
+</div>
+
+<script>
+function removeReadOnly() {
+    document.getElementById("writeTitle").readOnly = false;
+    document.getElementById("writeContent").readOnly = false;
+
+    // '수정하기' 버튼을 숨기고 '저장' 버튼을 표시
+    document.getElementById("re").style.display = "none";
+    document.getElementById("save").style.display = "flex";
+}
+
+function letterWriteRe() {
+    var num = document.getElementById("num").value;
+    var writeTitle = document.getElementById("writeTitle").value;
+    var writeContent = document.getElementById("writeContent").value;
+
+    $.ajax({
+        type: "POST",
+        url: "/letterWriteRe",
+        data: {'num': num, 'writeTitle': writeTitle, 'writeContent': writeContent},
+        success: function (response) {
+            if (response['result'] == 'success') {
+                document.getElementById("writeTitle").readOnly = true;
+                document.getElementById("writeContent").readOnly = true;
+
+                // '수정하기' 버튼을 숨기고 '저장' 버튼을 표시
+                document.getElementById("re").style.display = "flex";
+                document.getElementById("save").style.display = "none";
+
+                alert('수정 완료');
+            } else {
+                alert('수정 실패');
+            }
+        }
+    });
+}
+
+function letterSendDelete() {
+    var num = document.getElementById("num").value;
+
+    $.ajax({
+        type: "POST",
+        url: "/letterSendDelete",
+        data: {'num': num},
+        success: function (response) {
+            if (response['result'] == 'success') {
+                alert('삭제 완료');
+                // 리다이렉트할 URL
+                var redirectUrl = "/letterSendList";
+
+                // 페이지를 리다이렉트
+                window.location.replace(redirectUrl);
+            } else {
+                alert('삭제 실패');
+            }
+        }
+    });
+}
+
+// /letterSendList로 이동
+function letterSendListReUrl() {
+    // 리다이렉트할 URL
+    var redirectUrl = "/letterSendList";
+
+    // 페이지를 리다이렉트
+    window.location.replace(redirectUrl);
+}
+</script>
+{% endblock %}
