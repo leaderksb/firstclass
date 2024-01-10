@@ -20,7 +20,7 @@
    
     </div>
 </div>
-<form action="/login" method="post" id="registerForm" enctype="multipart/form-data">
+<form method="post" id="registerForm" enctype="multipart/form-data">
 <!-- 프로필 이미지 -->
 <div class="mt-10 flex justify-center">
     <div class="probox">
@@ -88,9 +88,11 @@
         contentType: false,
         success: function(response) {
           if (response == 'signupOK') {
+            alert('회원가입이 완료되었습니다.')
             window.location.href = './login'
           } else {
-            alert(response);
+            alert(JSON.stringify(response))
+            window.location.href = './signup'
           }
         },
         error: function(error) {

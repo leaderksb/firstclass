@@ -8,7 +8,7 @@ import re
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='tokki6013*',
+    password='1234',
     db='firstclass',
     charset='utf8mb4'
 )
@@ -214,7 +214,7 @@ def validate_email(email):
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     global conn
-
+    data = {'message':''}
     try:
         if request.method == 'POST':
             userInfo = request.form
@@ -225,9 +225,11 @@ def signup():
             # proimg = userInfo['proimg']
             # 유효성 검사 실시
             if not validate_email(email):
-                return "이메일 형식이 잘못됐습니다"
+                data['message'] = "이메일 형식이 잘못됐습니다"
+                return jsonify(data)
             if not validate_password(pw):
-                return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
+                data['message'] = "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
+                return jsonify(data)
             with conn.cursor() as cursor:
                 # 사용자가 업로드한 이미지 가져오기
                 file = request.files['proimg']
@@ -249,25 +251,29 @@ def signup():
                 else:
                     proimg = '../static/images/default_image.jpg'
                 if not (id and pw and nickname and email):
-                    return '모두 입력해주세요'
+                    data['message'] ='모두 입력해주세요'
+                    return jsonify(data)
                 else:
                     sql = "SELECT * FROM information WHERE id = %s"
                     cursor.execute(sql, (id,))
                     account = cursor.fetchone()
                     if account:
-                        return '이미 존재하는 id 입니다'
+                        data['message'] ='이미 존재하는 id 입니다'
+                        return jsonify(data)
                     sql = "SELECT * FROM information WHERE email = %s"
                     cursor.execute(sql, (email,))
                     account = cursor.fetchone()
                     if account:
-                        return '이미 가입한 이메일입니다'
+                        data['message'] ='이미 가입한 이메일입니다'
+                        return jsonify(data)
                     sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
                     cursor.execute(sql, (id, pw, nickname, email, proimg))
                 conn.commit()
                 return 'signupOK'
     except Exception as e:
         print(f"error occured: {e}")
-        return "회원가입 에러"
+        data['message'] ="회원가입 에러"
+        return jsonify(data)
     #finally:
         # MySQL 연결 종료
         # 자동호출
