@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+  <h1>Register</h1>
+  <form id="registerForm" enctype="multipart/form-data">
+    ID: <input type="text" id="id" name="id"><br>
+    Password: <input type="password" id="pw" name="pw"><br>
+    Nickname: <input type="text" id="nickname" name="nickname"><br>
+    Email: <input type="text" id="email" name="email"><br>
+    Profile Image: <input type="file" id="proimg" name="proimg"><br>
+    <button type="button" onclick="submitForm()">Submit</button>
+  </form>
+  
+  <script>
+    function submitForm() {
+
+      var formData = new FormData();
+      formData.append('id', $('#id').val());
+      formData.append('pw', $('#pw').val());
+      formData.append('nickname', $('#nickname').val());
+      formData.append('email', $('#email').val());
+      formData.append('proimg', $('#proimg')[0].files[0]);
+
+
+      $.ajax({
+        url: '/signup',
+        type: 'POST', 
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          alert(response);
+        },
+        error: function(error) {
+          console.error('Error:', error);
+        },
+      });
+    }
+  </script>
+</body>
+</html>
