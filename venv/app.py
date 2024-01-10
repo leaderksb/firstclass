@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify,session,request, redirect
+from flask import Flask, render_template, request, jsonify,session,redirect
 import pymysql
 from pymysql.cursors import DictCursor
 import os
@@ -55,17 +55,26 @@ def search():
         # MySQL 연결 종료
         conn.close()
 
+def CheckLogin(id):
+    # if session['logged_in'] == True and session['id'] == id:
+    if session.get('logged_in') == True and session.get('id') == id:
+        return True
+    else:
+        return False
+
 @app.route('/mypage', methods=['GET'])
 def read_profile():
     global conn
+    # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+    user_id = request.args.get('id')
+
+    if CheckLogin(user_id) == False:
+        return redirect('./login')
 
     try:
         with conn.cursor() as cursor:
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg, id FROM information WHERE id = %s;"
-
-            # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
-            user_id = request.args.get('id')
 
             # SQL 쿼리 실행
             cursor.execute(sql, (user_id,))
@@ -88,18 +97,18 @@ def read_profile():
 @app.route('/editProfile',methods=['GET'])
 def read_editprofile():
     global conn
+    # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
+    user_id = request.args.get('id')
 
+    if CheckLogin(user_id) == False:
+        return redirect('./login')
     try:
         with conn.cursor() as cursor:
             # SQL 쿼리 작성
             sql = "SELECT nickname, email, proimg,id FROM information WHERE id = %s;"
 
-            # 예를 들어, URL에서 전달되는 사용자 아이디를 가져오기
-            user_id = request.args.get('id')
-
             # SQL 쿼리 실행
             cursor.execute(sql, (user_id,))
-
             # 결과 가져오기
             result = cursor.fetchone()
 
@@ -171,7 +180,7 @@ def editprofile():
             cursor.execute(output_query,(id,))
             output = cursor.fetchall()
 
-            return jsonify(output) ;
+            return jsonify(output)
 
     except Exception as e:
         print(f"에러 발생: {e}")
@@ -216,35 +225,50 @@ def signup():
         if not validate_password(pw):
             return "비밀번호는 8자 이상에 숫자, 소문자, 대문자를 포함해주세요"
 
-        cursor = conn.cursor()
+        cursor = db.cursor()
 
-        # 사용자가 업로드한 이미지 가져오기
-        file = request.files.get('proimg')
+                # 사용자가 업로드한 이미지 가져오기
+                file = request.files['proimg']
 
-        # 이미지를 업로드 하지 않았다면 기본 사진 보여주기
-        if file:
-            proimg = file.read()
-        else:
-            with open('/Users/juminkim/Desktop/firstclass/venv/static/default_image.jpg', 'rb') as f:
-                proimg = f.read()
+                if file and file.filename != '':
+                    extension = os.path.splitext(file.filename)[1]
+                    f_name = id + extension
 
-        if not (id and pw and nickname and email):
-            return '모두 입력해주세요'
-        else:
-            sql = "SELECT * FROM information WHERE id = %s"
-            cursor.execute(sql, (id,))
-            account = cursor.fetchone()
-            if account:
-                return '이미 존재하는 id 입니다'
+                    # directory 경로
+                    upload_folder = 'venv/static/images'
 
-            sql = "SELECT * FROM information WHERE email = %s"
-            cursor.execute(sql, (email,))
-            account = cursor.fetchone()
-            if account:
-                return '이미 가입한 이메일입니다'
+                    # directory 가 없다면 생성
+                    os.makedirs(upload_folder, exist_ok=True)
 
-            sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (id, pw, nickname, email, proimg))
+                    # Windows에서는 별도로 쓰기 권한을 추가해야 함
+                    try:
+                        os.chmod(upload_folder, 0o777)
+                    except Exception as e:
+                        print(f"Failed to set write permissions: {e}")
+                    # 파일 저장
+                    file.save(os.path.join(upload_folder, f_name))
+
+                    proimg = '../static/images/'+f_name
+                else:
+                    proimg = '../static/images/default_image.jpg'
+
+                if not (id and pw and nickname and email):
+                    return '모두 입력해주세요'
+                else:
+                    sql = "SELECT * FROM information WHERE id = %s"
+                    cursor.execute(sql, (id,))
+                    account = cursor.fetchone()
+                    if account:
+                        return '이미 존재하는 id 입니다'
+
+                    sql = "SELECT * FROM information WHERE email = %s"
+                    cursor.execute(sql, (email,))
+                    account = cursor.fetchone()
+                    if account:
+                        return '이미 가입한 이메일입니다'
+
+                    sql = "INSERT INTO information(id, pw, nickname, email, proimg) VALUES(%s, %s, %s, %s, %s)"
+                    cursor.execute(sql, (id, pw, nickname, email, proimg))
 
             conn.commit()
             cursor.close()
@@ -269,12 +293,17 @@ def login():
         cursor.execute(sql, (id, pw))
         accout = cursor.fetchone()
 
-        if accout:
-            session['logged_in'] = True
-            session['id'] = id
-            return '로그인 성공!'
-        else:
-            return 'ID 또는 비밀번호가 일치하지 않습니다'
+                if accout:
+                    session['logged_in'] = True
+                    session['id'] = id
+                    return 'loginOK'
+                else:
+                    return 'ID 또는 비밀번호가 일치하지 않습니다'
+    except Exception as e:
+        print(f"error occured: {e}")
+        return "로그인 에러"
+    finally:
+        connection.close()
 
     return render_template('login.html')
 
