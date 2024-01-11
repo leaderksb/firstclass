@@ -21,7 +21,7 @@
         <span class="block text-sm font-medium text-slate-700 text-center">내용</span>
         <textarea class="write_textarea" readonly id="writeContent" >{{ record['content'] }}</textarea>
     </label>
-    <h1 style="margin: 30px; text-align: end;">{{record['send_id']}}보냄</h1>
+    <h1 style="margin: 30px; text-align: end;" id="send_id"></h1>
     <!-- 삭제 버튼 -->
     <div class="flex justify-center"><button onclick="letterReceiveDelete()" class="rounded-full bg-amber-500 h-8 font-bold text-white w-44" id="delete">삭제</button>
     </div>
@@ -32,6 +32,13 @@
 </div>
 
 <script>
+$(document).ready(function(){
+    var send_id;
+    var is_anonymous = "{{record['is_anonymous']}} 보냄";
+    send_id = is_anonymous ? '익명 보냄' : "{{record['send_id']}} 보냄" ;
+    $('#send_id').html(send_id);
+})
+
 function letterReceiveDelete() {
     var num = document.getElementById("num").value;
 

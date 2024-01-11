@@ -4,8 +4,8 @@
 <div class="m-auto flex justify-center h-12 w-3/5">
     <button class="rounded-full bg-rose-300 w-full text-lg font-bold text-white">받은 복주머니</button>
 </div>
-<div class="div_align_center">
-    <table>
+<div class= "m-auto mt-14 flex justify-center container border-rose-300 border-4" style="height: auto;width: 55%; border-radius: 5%;">
+    <table class="table">
         <tr>
             <td>보낸이</td>
             <td>제목</td>
@@ -14,13 +14,18 @@
         </tr>
         {% for record in data %}
         <tr>
-            <td>{{ record['send_id'] }}</td>
+            {% if record['is_anonymous'] == 'Y'%}
+            <td>익명</td>
+            {% else %}
+            <td>{{record['send_id']}}</td>
+            {% endif %}
             <td><a href="/letterReceive/{{ record['num'] }}">{{ record['title'] }}</a></td>
             <td>{{ record['letterdate'] }}</td>
             <td>{{ record['readchk'] }}</td>
         </tr>
         {% endfor %}
     </table>
+    
 </div>
 
 <script>
