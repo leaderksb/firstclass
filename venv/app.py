@@ -9,7 +9,7 @@ import re
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='1234',
+    password='tokki6013*',
     db='firstclass',
     charset='utf8mb4'
 )
@@ -63,8 +63,9 @@ def search():
         # 자동호출
 
 def CheckLogin(id):
-    # if session['logged_in'] == True and session['id'] == id:
     if session.get('logged_in') == True and session.get('id') == id:
+        # print('session.get(\'logged_in\')', session.get('logged_in'))
+        # print('session.get(\'id\')', session.get('id'))
         return True
     else:
         return False
@@ -288,17 +289,20 @@ def login():
 
     try:
         if request.method == 'POST':
-            userInfo = request.form
-            id = userInfo['id']
-            pw = userInfo['pw']
+            id = request.form['id']
+            pw = request.form['pw']
+
             with conn.cursor() as cursor:
-                sql = "SELECT * FROM information WHERE id = %s AND pw = %s"
+                sql = "select * from information where id = %s AND pw = %s;"
                 cursor.execute(sql, (id, pw))
                 accout = cursor.fetchone()
-                if accout:
+                print(accout)
+                # id, pw를 가진 회원이 있다면
+                if accout is not None:
+                    print('not none')
                     session['logged_in'] = True
                     session['id'] = id
-                    return 'loginOK'
+                    return jsonify(result='success')
                 else:
                     return 'ID 또는 비밀번호가 일치하지 않습니다'
     except Exception as e:
@@ -525,9 +529,6 @@ def letterSendList():
 @app.route('/letterSend/<num>', methods=['GET'])
 def letterSend(num):
     global conn
-
-    # 만약에 로그인 id가 있으면 그걸 luckybag 테이블에서 send_id로 검색
-    send_id = session.get('id')
 
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:  # 딕셔너리 타입으로 가져오기
