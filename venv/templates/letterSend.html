@@ -10,7 +10,7 @@
         <img class="message" src="../static/images/{{ record['letterimg'] }}" alt="letterImg">
     </div>
     <div class="messagebox">
-    <h1 class="mt-8 ml-12">{{record['send_id']}}에게</h1>
+    <h1 class="mt-8 ml-12">{{record['receive_id']}}에게</h1>
 
     <input type="hidden" id="num" value="{{ record['num'] }}">
     <label class="block ml-8 mt-2">
@@ -21,7 +21,7 @@
         <span class="block text-sm font-medium text-slate-700 text-center">내용</span>
         <textarea class="write_textarea" readonly id="writeContent" >{{ record['content'] }}</textarea>
     </label>
-    <h1 style="margin: 30px; text-align: end;">{{record['receive_id']}}보냄</h1>
+    <h1 style="margin: 30px; text-align: end;" id="send_id"></h1>
     <div class="flex justify-center">
     <!-- 수정 버튼 -->
     {% if record['readchk'] == 'False' %}
@@ -40,6 +40,13 @@
 </div>
 
 <script>
+$(document).ready(function(){
+    var send_id;
+    var is_anonymous = "{{record['is_anonymous']}} 보냄";
+    send_id = is_anonymous ? '익명 보냄' : "{{record['send_id']}} 보냄" ;
+    $('#send_id').html(send_id);
+})
+
 function removeReadOnly() {
     document.getElementById("writeTitle").readOnly = false;
     document.getElementById("writeContent").readOnly = false;

@@ -57,13 +57,11 @@ function letterWriteNew(who) {
         success: function (response) {
             if (response['result'] == 'success') {
                 alert(letterImg + ' 작성 완료');
-                function letterWriteRedirect() {
-                    // 리다이렉트할 URL
-                    var redirectUrl = "/letterReceiveList";
+                // 리다이렉트할 URL
+                var redirectUrl = "/main";
 
-                    // 페이지를 리다이렉트
-                    window.location.href = redirectUrl;
-                }
+                // 페이지를 리다이렉트
+                window.location.href = redirectUrl;
             } else {
                 alert(letterImg + ' 작성 실패');
             }

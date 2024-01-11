@@ -369,21 +369,18 @@ def letterImgReceive():
     global conn
 
     send_id = request.form['send_id']
+    id = session.get('id')
     receive_id = request.form['receive_id']
     letterImg = request.form['letterImg']
     writeTitle = request.form['writeTitle']
     writeContent = request.form['writeContent']
-
-    print('letterImg >', letterImg)
-    print('writeTitle >', writeTitle)
-    print('writeContent >', writeContent)
-    print()
-
+    isAnonymous = 'Y' if send_id =='익명' else 'N'
+    print(isAnonymous)
     try:
         with conn.cursor() as cursor:
-            sql = "insert into luckybag (send_id, receive_id, letterimg, title, content, readchk) values (%s, %s, %s, %s, %s, %s);"
+            sql = "insert into luckybag (send_id, receive_id, letterimg, title, content, readchk, is_anonymous) values (%s, %s, %s, %s, %s, %s, %s);"
             # SQL 쿼리 실행
-            cursor.execute(sql, (send_id, receive_id, letterImg, writeTitle, writeContent, 'False'))
+            cursor.execute(sql, (id, receive_id, letterImg, writeTitle, writeContent, 'False',isAnonymous))
             # DB에 반영
             conn.commit()
             # MySQL 연결 종료
@@ -453,21 +450,17 @@ def letterReceiveList():
 def letterReceive(num):
     global conn
 
-    # 만약에 로그인 id가 있으면 그걸 luckybag 테이블에서 receive_id로 검색
-    receive_id = 'user1'
-
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:  # 딕셔너리 타입으로 가져오기
             sql = "select * from luckybag where num = %s;"
             # SQL 쿼리 실행
             cursor.execute(sql, (num,))  # 변환 불가능한 튜플로 받아오는 방법
             data = cursor.fetchone()  # 해당 행을 가져옴
-            # 자동호출
-            # cursor.close()
-            # conn.close()
+        
             sql = "update luckybag set readchk = 'True' WHERE num = %s;"
             cursor.execute(sql, (num,))
             conn.commit()
+            
             return render_template('letterReceive.html', record=data)
     except Exception as e:
         print('Error:', e)
