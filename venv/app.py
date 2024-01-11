@@ -134,7 +134,7 @@ def read_editprofile():
 
 @app.route('/editProfile',methods=['PUT'])
 def editprofile():
-    file = request.files['file']
+    file = request.files.get('file')
     data = json.loads(request.form['data'])
     id = data.get("id")
     password = data.get("password")
